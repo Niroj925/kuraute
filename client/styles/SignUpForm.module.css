@@ -1,0 +1,74 @@
+.form {
+    width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fff;
+  }
+  
+  .formTitle {
+    margin-top: 0;
+    font-size: 24px;
+    text-align: center;
+  }
+  
+  .formGroup {
+    margin-bottom: 20px;
+  }
+  
+  .formLabel {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  .formInput {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  .passwordContainer {
+    position: relative;
+  }
+  
+  .showPasswordButton {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    border: none;
+    background-color: transparent
+  }
+
+.submitButton {
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.submitButton:hover {
+  background-color: #0069d9;
+}
+.showPasswordButton {
+  padding: 0;
+  margin-left: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.showPasswordButton svg {
+  width: 20px;
+  height: 20px;
+  color: #007bff;
+}
