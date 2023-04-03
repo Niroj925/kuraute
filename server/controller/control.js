@@ -87,8 +87,9 @@ async getAllUsers(req, res) {
       }
     : {};
 
-  const userId = req.query.id;
-
+  // const userId = req.query.id;
+  const userId = req.userId; 
+   console.log(userId);
   const users = await userModel.find({
     ...keyword,
     _id: { $ne: userId },
