@@ -61,4 +61,41 @@ async authUser(req,res){
    res.json(err);
   }
 }
+
+// async getAllUser(req,res){
+// const keyword=req.query
+// ?{
+//   $or:[
+//     {name:{$regex:req.query.search,$options:"i"}},
+//     {email:{$regex:req.query.search,$options:"i"}}
+//   ]
+// }
+// :{
+
+// }
+// const user=await (await userModel.find(keyword)).find({_id:{$ne:req.query.id}})
+
+// res.json(user)
+// }
+async getAllUsers(req, res) {
+  const keyword = req.query
+    ? {
+        $or: [
+          { name: { $regex: req.query.search, $options: "i" } },
+          { email: { $regex: req.query.search, $options: "i" } },
+        ],
+      }
+    : {};
+
+  const userId = req.query.id;
+
+  const users = await userModel.find({
+    ...keyword,
+    _id: { $ne: userId },
+  });
+
+  res.json(users);
+}
+
+
 }
