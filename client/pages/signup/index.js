@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import styles from '../../styles/SignUpForm.module.css'
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import api from '../api/config.js';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import {Grid} from "@mui/material";
+
 
 export default function SignUpForm() {
   const [email, setEmail] = useState('');
@@ -21,17 +26,51 @@ export default function SignUpForm() {
   };
 
   const handleNameChange=(event)=>{
-    setUsername(event.value.name)
+    setUsername(event.target.value)
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async(event) => {
     event.preventDefault();
-    console.log(`Email: ${email}, Password: ${password}`);
+    console.log(`Email: ${email}, Password: ${password} name:${username}`);
+    const data={
+      "name":username,
+      "email":email,
+      "password":password
+    }
+    const res=await api.post('/register',data);
+    console.log(res);
+    if(res){
+        toast.success('Successfully created Account', {
+          position: "bottom-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          });
+        }
+        else{
+          toast.error("Unable to create Account", {
+            position: "bottom-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            });
+        }
+    
     setEmail('');
     setPassword('');
+    setUsername(' ');
   };
 
   return (
+    <Grid>
     <form className={styles.form} onSubmit={handleSubmit}>
       <h2 className={styles.formTitle}>Sign Up</h2>
       <div className={styles.formGroup}>
@@ -82,8 +121,10 @@ export default function SignUpForm() {
       <div className={styles.formGroup}>
         <a href="#" className={styles.forgotPasswordLink}>Forgot password?</a>
         <span className={styles.separator}>|</span>
-        <a href="#" className={styles.signUpLink}>Sign In</a>
+        <a href="/login" className={styles.signUpLink}>Sign In</a>
       </div>
     </form>
+    <ToastContainer/>
+    </Grid>
   );
 }

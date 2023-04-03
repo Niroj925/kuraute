@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import styles from '../../styles/SignUpForm.module.css'
+import api from '../api/config.js';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function SignUpForm() {
   const [email, setEmail] = useState('');
@@ -18,14 +21,46 @@ export default function SignUpForm() {
     setShowPassword(!showPassword);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async(event) => {
     event.preventDefault();
     console.log(`Email: ${email}, Password: ${password}`);
+    event.preventDefault();
+    const data={
+      "email":email,
+      "password":password
+    }
+    const res=await api.post('/login',data);
+    console.log(res);
+    if(res){
+        toast.success('Successfully login', {
+          position: "bottom-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          });
+        }
+        else{
+          toast.error("Unable to login", {
+            position: "bottom-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            });
+        }
     setEmail('');
     setPassword('');
   };
 
   return (
+    <>
     <form className={styles.form} onSubmit={handleSubmit}>
       <h2 className={styles.formTitle}>Login</h2>
       <div className={styles.formGroup}>
@@ -68,5 +103,7 @@ export default function SignUpForm() {
         <a href="/signup" className={styles.signUpLink}>Sign up</a>
       </div>
     </form>
+    <ToastContainer/>
+    </>
   );
 }
