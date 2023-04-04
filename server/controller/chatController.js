@@ -107,4 +107,27 @@ async createGroupChat(req,res){
 
 }
 
+async renameGroup(req,res){
+    const {chatId,chatName}=req.body;
+
+    const updatedChat=await chatModel.findByIdAndUpdate(
+        chatId,
+        {
+            chatName,
+        },
+        {
+         new:true,   
+        }
+    )
+    .populate('user','-password')
+    .populate('groupAdmin','-password');
+
+    if(!updatedChat){
+        res.status(404);
+        throw new Error ('chat not found');
+    }else{
+        res.json(updatedChat);
+    }
+}
+
 }
