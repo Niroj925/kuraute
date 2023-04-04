@@ -6,7 +6,7 @@ import axios from "axios";
 import connectDB from "./config/db_conn.js";
 import router from './route/userRoutes.js';
 import {notfound,errHandler} from './middleware/errMiddleware.js';
-
+import chatRoute from './route/chatRoute.js';
 const app=express();
 app.use(express.json());//to accept json data
 app.use(cors());
@@ -14,6 +14,8 @@ app.use(cors());
 connectDB();
 
 app.use('/api/user',router);
+app.use('/api/chat',chatRoute);
+//to handle error
 app.use(notfound);
 app.use(errHandler);
 app.get('/posts', async (req, res) => {
