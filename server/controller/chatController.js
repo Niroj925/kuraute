@@ -130,4 +130,49 @@ async renameGroup(req,res){
     }
 }
 
+async addToGroup(req,res){
+    const {chatId,userId}=req.body;
+
+    const added=await chatModel.findByIdAndUpdate(
+        chatId,
+        {
+            $push:{user:userId},
+        },
+        {
+            new:true
+        }
+    )
+    .populate('user','-password')
+    .populate('groupAdmin','-password');
+
+    if(!added){
+        res.status(404);
+        throw new Error('chat not found');
+    }else{
+      res.json(added);
+    }
+}
+
+async removeFromGroup(req,res){
+    const {chatId,userId}=req.body;
+
+    const removed=await chatModel.findByIdAndUpdate(
+        chatId,
+        {
+            $pull:{user:userId},
+        },
+        {
+            new:true
+        }
+    )
+    .populate('user','-password')
+    .populate('groupAdmin','-password');
+
+    if(!removed){
+        res.status(404);
+        throw new Error('chat not found');
+    }else{
+      res.json(removed);
+    }
+}
 }

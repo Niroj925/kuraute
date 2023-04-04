@@ -10,7 +10,7 @@ chatRouter.get('/',validateToken, chatController.fetchChats);
 chatRouter.post('/',validateToken, chatController.accessChats);
 chatRouter.post('/group',validateToken, chatController.createGroupChat);
 chatRouter.put('/rename',validateToken, chatController.renameGroup);
-// chatRouter.put('/groupremove',validateToken, chatController.removeFromGroup);
-// chatRouter.put('/groupadd',validateToken, chatController.addToGroup);
+chatRouter.put('/groupremove',validateToken, chatController.removeFromGroup);
+chatRouter.put('/groupadd',validateToken, chatController.addToGroup);
 
 export default chatRouter;
