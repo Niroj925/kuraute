@@ -7,30 +7,26 @@ import userModel from '../model/userModel.js';
 
 export default class ChatController{
     async fetchChats(req,res){
-        const {username,email,password}=req.body;
-        // if(!username||!email||!password){
-        //   res.status(400);
-        //   throw new Error('all the field are required');
-        // }
-        const emails=await chatModel.findOne({email:req.body.email});
-        // console.log(emails);
-        if(emails){
-            res.json({msg:'email already exist'});
-        }else{
-          try {
-            const response = await chatModel.create({...req.body});
-            const token = generateToken(response._id);
-            if (response === null) {
-              return res.json([]);
-            } else {
-              return res.json({...response.toObject(), token}); // Add the token to the response object
-            }
-          } catch (err) {
-            return res.json(err);
-          }
+        try{
+         chatModel.find({user:{$elemMatch:{$eq:req.userId}}})
+         .populate('user','-password')
+         .populate('groupAdmin','-password')
+         .populate('latestMessage')
+         .sort({updatedAt:-1})
+         .then(async (result)=>{
+            result=await userModel.populate(result,{
+                path:"latestMessage.sender",
+                select:"name pic email",
+            });
+            res.status(200).send(result);
+         })
+            
           
-        }  
+        }catch(err){
+            console.log(err);
+        }
 }
+
 async accessChats(req,res){
        
  const {id}=req.body;
@@ -43,8 +39,8 @@ async accessChats(req,res){
  var isChat=await chatModel.find({
     isGroupChat:false,
     $and:[
-        {users:{$elemMatch:{$eq:req.userId}}},
-        {users:{$elemMatch:{$eq:id}}},
+        {user:{$elemMatch:{$eq:req.userId}}},
+        {user:{$elemMatch:{$eq:id}}},
     ]
  })
  .populate("user","-password")
@@ -77,26 +73,38 @@ async accessChats(req,res){
  }
 }
 
-async getAllUsers(req, res) {
-  const keyword = req.query
-    ? {
-        $or: [
-          { name: { $regex: req.query.search, $options: "i" } },
-          { email: { $regex: req.query.search, $options: "i" } },
-        ],
-      }
-    : {};
+async createGroupChat(req,res){
+    if(!(req.body.users||req.body.name)){
+        return res.status(400).send({message:'please fill all the field'});
+    }
+    var users=JSON.parse(req.body.users);
+    if(users.length<2){
+        return res
+        .status(400)
+        .send('user should more than 2');
+    }
+    // add all users along with login users 
 
-  // get login user id from middleware validation
-  const id = req.id; 
-   console.log(id);
-  const users = await chatModel.find({
-    ...keyword,
-    _id: { $ne: id },
-  });
+    users.push(req.userId);
 
-  res.json(users);
+    try{
+        const groupChat=await chatModel.create({
+            chatName:req.body.name,
+            user:users,
+            isGroupChat:true,
+            groupAdmin:req.userId
+        });
+        const fullGroupChat=await chatModel.findOne({_id:groupChat._id})
+        .populate('user','-password')
+        .populate('groupAdmin','-password')
+
+        res.status(200).json(fullGroupChat)
+
+    }catch(err){
+        res.status(400);
+        throw new Error(err.message);
+    }
+
 }
-
 
 }
