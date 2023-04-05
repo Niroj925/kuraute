@@ -3,7 +3,7 @@ import "dotenv/config";
 
 const validateToken = (req, res, next) => {
   const token = req.headers.token;
-
+  console.log(token);
   if (!token) {
     return res.status(403).json({ success: false, message: "Token not provided" });
   }

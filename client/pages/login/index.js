@@ -3,8 +3,11 @@ import styles from '../../styles/SignUpForm.module.css'
 import api from '../api/config.js';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 export default function SignUpForm() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -30,19 +33,22 @@ export default function SignUpForm() {
       "password":password
     }
     const res=await api.post('/login',data);
+
     console.log(res);
-    if(res){
-        toast.success('Successfully login', {
-          position: "bottom-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-          });
-        }
+    if(res){     
+      toast.success('Successfully login', {
+        position: "bottom-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        });
+        localStorage.setItem('token', JSON.stringify(res.data.token));
+        router.push('/profile'); 
+      }
         else{
           toast.error("Unable to login", {
             position: "bottom-right",
