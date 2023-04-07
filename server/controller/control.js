@@ -62,21 +62,6 @@ async authUser(req,res){
   }
 }
 
-// async getAllUser(req,res){
-// const keyword=req.query
-// ?{
-//   $or:[
-//     {name:{$regex:req.query.search,$options:"i"}},
-//     {email:{$regex:req.query.search,$options:"i"}}
-//   ]
-// }
-// :{
-
-// }
-// const user=await (await userModel.find(keyword)).find({_id:{$ne:req.query.id}})
-
-// res.json(user)
-// }
 async getAllUsers(req, res) {
   const keyword = req.query
     ? {
@@ -87,7 +72,7 @@ async getAllUsers(req, res) {
       }
     : {};
 
-  // const userId = req.query.id;
+  // get login user id from middleware validation
   const userId = req.userId; 
    console.log(userId);
   const users = await userModel.find({

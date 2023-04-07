@@ -47,7 +47,8 @@ export default function SignUpForm() {
         theme: "light",
         });
         localStorage.setItem('token', JSON.stringify(res.data.token));
-        router.push('/profile'); 
+        const userid=res.data._id;
+        router.push(`/profile?userid=${userid}`); 
       }
         else{
           toast.error("Unable to login", {

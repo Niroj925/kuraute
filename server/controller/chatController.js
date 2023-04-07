@@ -29,7 +29,7 @@ export default class ChatController{
 
 async accessChats(req,res){
        
- const {id}=req.body;
+ const id=req.body.id;
 
  if(!id){
     console.log('userid param not sent with request');
