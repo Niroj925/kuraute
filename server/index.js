@@ -7,6 +7,8 @@ import connectDB from "./config/db_conn.js";
 import router from './route/userRoutes.js';
 import {notfound,errHandler} from './middleware/errMiddleware.js';
 import chatRoute from './route/chatRoute.js';
+import messageRoute from "./route/messageRoute.js";
+
 const app=express();
 app.use(express.json());//to accept json data
 app.use(cors());
@@ -15,6 +17,7 @@ connectDB();
 
 app.use('/api/user',router);
 app.use('/api/chat',chatRoute);
+app.use('/api/message',messageRoute);
 //to handle error
 app.use(notfound);
 app.use(errHandler);
