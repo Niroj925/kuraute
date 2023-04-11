@@ -4,7 +4,7 @@ import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { TextField, InputAdornment,Tab, Grid,Box,Divider, Typography,Button, Dialog,Chip,
+import { TextField, InputAdornment,Tab, Grid,Box,Divider, Typography,Button, Dialog,Chip,FormControl,
   DialogTitle,
   DialogContent,
   DialogActions,} from '@mui/material';
@@ -16,9 +16,16 @@ import makeStyles from '@mui/styles/makeStyles';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import DialogBox from '../../component/creatGroup';
-
+import SendIcon from '@mui/icons-material/Send';
 
 const useStyles = makeStyles({
+  root: {
+    display: 'flex',
+    alignItems: 'center',
+    '& > *': {
+      marginRight:"10px",
+    },
+  },
     card: {
       display: "flex",
       alignItems: "center",
@@ -67,6 +74,22 @@ const useStyles = makeStyles({
     
     tab: {
       flex: 1
+    },
+    button:{
+      marginLeft:"10px"
+    },
+    sendIcon:{
+      cursor:"pointer",
+      "&:hover":{
+        color:"blue"
+      }
+    },
+    txtMsg:{
+      backgroundColor:"Blue",
+      color:"white",
+      borderRadius:"5px",
+      paddingLeft:"5px",
+      paddingRight:"5px"
     }
 
   });
@@ -78,6 +101,8 @@ export default function UnstyledTabsIntroduction() {
   const [selectedChat, setSelectedChat]=useState();
   const [chats,setChats]=useState([]);
  const [openDialog, setOpenDialog] = useState(false);
+ const [message,setMessage]=useState([]);
+ const [newMessage,setNewMessage]=useState();
 
   const router=useRouter();
 
@@ -132,6 +157,16 @@ useEffect(() => {
       
       if (error.response && error.response.status === 403) {
         router.push("/login");
+        toast.error("invalid authentication ", {
+          position: "bottom-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          });
       }else{
         router.push("/login");
       }
@@ -194,6 +229,43 @@ useEffect(() => {
     const handleClose = () => {
       setOpenDialog(false);
     };
+
+    const handleInputChange = (event) => {
+      setNewMessage(event.target.value);
+    }
+  
+    const handleSubmit = (event) => {
+      event.preventDefault();
+      // Handle submit logic here, such as sending the input value to a server or updating state
+      console.log('Submitting input value:', newMessage);
+      // Clear the input field
+      setNewMessage('');
+    }
+
+    const sendMessage=async(event)=>{
+      
+      if(event.key==='Enter'){
+        try{
+          const response = await axios.post(
+            'http://localhost:8080/api/message',
+            {
+              msg:newMessage,
+              chatId:selectedChat._id
+            },
+            {
+              headers: {
+                token: JSON.parse(localStorage.getItem("token"))
+              }
+            })
+          console.log(response)
+          setNewMessage('');
+          setMessage([...message,response.data.content]);
+        }catch(err){
+          console.log(err);
+        }
+      }
+    
+    }
   
     
   return (
@@ -302,15 +374,63 @@ useEffect(() => {
             selectedChat.isGroupChat
             ? selectedChat.chatName
             : selectedChat.user && selectedChat.user[1].name
-        )}
+        )
+         
+        }
     </Typography>
 </Grid>
          
         </Grid>
         <Divider style={{marginTop:"10px",marginBottom:"10px"}}/>
          <Grid>
-          
-
+         
+          <Typography>Click to user to start Chat</Typography>
+          <Divider style={{marginTop:"10px",marginBottom:"10px"}}/>
+          <Divider style={{marginBottom:"10px"}}/>
+          <Grid container >
+          {/* <Grid container style={{height: "300px", overflowY: "scroll"}}> */}
+            {
+            message&&message.map((msg)=>{
+              return (
+                <>
+                <Grid container direction='row' alignItems='center' style={{marginTop:"5px"}}>
+                  <Avatar style={{ width: '30px', height: '30px',marginRight:"5px"}}/>
+                 <Typography className={classes.txtMsg}>
+                  {msg}
+                  </Typography>
+                </Grid>
+                 
+                </>
+               
+              )
+            })
+          }
+          </Grid>
+                
+          <Grid style={{position: "absolute", 
+          bottom: 0, left:0,
+          width: "100%"}}>
+    <FormControl onKeyDown={sendMessage} fullWidth={true}>
+      <TextField
+        id="inputField"
+        variant="outlined"
+        size="large"
+        placeholder="Enter a message...."
+        value={newMessage}
+        onChange={handleInputChange}
+        InputProps={{
+          endAdornment: (
+            <InputAdornment position="end">
+              <SendIcon onClick={sendMessage} className={classes.sendIcon}/>
+            </InputAdornment>
+          ),
+        }}
+        style={{
+          margin:"15px",    
+        }}
+      />
+    </FormControl>
+  </Grid>
          </Grid>
 
         <DialogBox open={openDialog} onClose={handleClose} />
