@@ -4,7 +4,7 @@ import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { TextField, InputAdornment,Tab, Grid,Box,Divider, Typography,Button, Dialog,Chip,FormControl,
+import { TextField, InputAdornment,Tab, Grid,Box,Divider,Tooltip, Typography,Button, Dialog,Chip,FormControl,
   DialogTitle,
   DialogContent,
   DialogActions,} from '@mui/material';
@@ -17,7 +17,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import DialogBox from '../../component/creatGroup';
 import SendIcon from '@mui/icons-material/Send';
-
+import ScrollableFeed from 'react-scrollable-feed';
 const useStyles = makeStyles({
   root: {
     display: 'flex',
@@ -84,12 +84,17 @@ const useStyles = makeStyles({
         color:"blue"
       }
     },
-    txtMsg:{
+    sendMsg:{
       backgroundColor:"Blue",
       color:"white",
-      borderRadius:"5px",
-      paddingLeft:"5px",
-      paddingRight:"5px"
+      borderRadius:"20px",
+      padding:"6px"
+    },
+    receiveMsg:{
+      backgroundColor:"green",
+      color:"black",
+      borderRadius:"20px",
+      padding:"6px"
     }
 
   });
@@ -188,14 +193,15 @@ useEffect(() => {
     router.push('/login');
     }
 
-    const userClick=async(id)=>{
-      console.log(id);
+    const userClick=async(userId)=>{
+      console.log('userId:');
+      console.log(userId)
       // console.log(JSON.parse(localStorage.getItem("token")));
     try {
       const response = await axios.post(
         'http://localhost:8080/api/chat',
         {
-          id: id
+          id:userId
         },
         {
           headers: {
@@ -205,10 +211,11 @@ useEffect(() => {
       );
       console.log(response);
       setSelectedChat(response.data);
+      console.log(selectedChat);
       const {data}=response;
       if(!chats.find((c)=>c._id===response.data._id)) setChats([data, ...chats]);
 
-
+      fetchMessage();
       setValue("2")
       
     } catch (error) {
@@ -219,6 +226,8 @@ useEffect(() => {
     }
     const chatClick=(chat)=>{
     setSelectedChat(chat);
+    console.log(selectedChat);
+    fetchMessage();
     setValue("2")
     }
 
@@ -245,6 +254,15 @@ useEffect(() => {
     const sendMessage=async(event)=>{
       
       if(event.key==='Enter'){
+       sendMsg();
+       fetchMessage();
+       console.log(message)
+      }
+    
+    }
+
+    const sendMsg=async(event)=>{
+      
         try{
           const response = await axios.post(
             'http://localhost:8080/api/message',
@@ -257,16 +275,46 @@ useEffect(() => {
                 token: JSON.parse(localStorage.getItem("token"))
               }
             })
-          console.log(response)
           setNewMessage('');
-          setMessage([...message,response.data.content]);
+          // setMessage([...message,response.data.content]);
+          fetchMessage();
+          console.log("message set :")
+          console.log(message);
         }catch(err){
           console.log(err);
         }
-      }
+      
     
     }
-  
+
+    const fetchMessage=async()=>{
+            console.log(selectedChat);
+      try{
+        const response = await axios.get(
+          `http://localhost:8080/api/message/${selectedChat._id}`,
+          // {
+          //   msg:newMessage,
+          //   chatId:selectedChat._id
+          // },
+          {
+            headers: {
+              token: JSON.parse(localStorage.getItem("token"))
+            }
+          })
+        console.log(response.data)
+        
+        setNewMessage('');
+        // setMessage([]);
+        setMessage(response.data);
+      }catch(err){
+        console.log(err);
+      }
+    }
+
+    useEffect(()=>{
+      fetchMessage();
+    },[selectedChat])
+
     
   return (
      <>
@@ -336,6 +384,10 @@ useEffect(() => {
                   .map((word) => word.charAt(0).toUpperCase())
                   .join("")
                  ):(
+                  chat.user[1]._id===userid?chat.user[0].name
+                  .split(" ")
+                  .map((word) => word.charAt(0).toUpperCase())
+                  .join(""):
                  chat.user[1].name
                     .split(" ")
                     .map((word) => word.charAt(0).toUpperCase())
@@ -346,7 +398,8 @@ useEffect(() => {
               <CardContent>
 
                 <p>{
-                chat.isGroupChat===true?chat.chatName: chat.user[1].name               
+                chat.isGroupChat===true?chat.chatName:
+                chat.user[1]._id===userid?chat.user[0].name: chat.user[1].name            
                 }
                 </p>
                 {/* <p>{user.user}</p> */}
@@ -369,11 +422,22 @@ useEffect(() => {
           </Button>
            </Grid>
            <Grid>
+           <Tooltip title= {selectedChat && (
+            selectedChat.isGroupChat
+            ? selectedChat.chatName
+            : selectedChat.user &&
+            selectedChat.user[1]._id===userid?selectedChat.user[0].name:selectedChat.user[1].name 
+        )
+         
+        }>
+                         <Avatar style={{ width: '30px', height: '30px', marginRight: '5px' }} />
+                      </Tooltip>
     <Typography variant='h5'>
         {selectedChat && (
             selectedChat.isGroupChat
             ? selectedChat.chatName
-            : selectedChat.user && selectedChat.user[1].name
+            : selectedChat.user &&
+            selectedChat.user[1]._id===userid?selectedChat.user[0].name:selectedChat.user[1].name 
         )
          
         }
@@ -384,20 +448,39 @@ useEffect(() => {
         <Divider style={{marginTop:"10px",marginBottom:"10px"}}/>
          <Grid>
          
-          <Typography>Click to user to start Chat</Typography>
+          <Typography>Click User to start Chat</Typography>
           <Divider style={{marginTop:"10px",marginBottom:"10px"}}/>
           <Divider style={{marginBottom:"10px"}}/>
-          <Grid container >
-          {/* <Grid container style={{height: "300px", overflowY: "scroll"}}> */}
+          <Grid container style={{ maxHeight: "300px", overflow: "auto" ,marginBottom:"15px" }}>
             {
             message&&message.map((msg)=>{
               return (
                 <>
-                <Grid container direction='row' alignItems='center' style={{marginTop:"5px"}}>
-                  <Avatar style={{ width: '30px', height: '30px',marginRight:"5px"}}/>
-                 <Typography className={classes.txtMsg}>
-                  {msg}
-                  </Typography>
+                <Grid container
+                 direction='row' 
+                 alignItems='center' 
+                 justifyContent={msg.sender._id===userid ? 'flex-end' : 'flex-start'} 
+                 style={{marginTop:"5px"}}>
+                  {
+                    msg.sender._id===userid?(
+                      <>
+                      <Typography className={classes.sendMsg}>
+                      {msg.content}
+                      </Typography>
+                      </>
+                    ):(
+                      <>
+                      {/* <Avatar style={{ width: '30px', height: '30px',marginRight:"5px"}}/> */}
+                      <Tooltip title={msg.sender.name}>
+                         <Avatar style={{ width: '30px', height: '30px', marginRight: '5px' }} />
+                      </Tooltip>
+                      <Typography className={classes.receiveMsg}>
+                      {msg.content}
+                      </Typography>
+                      </>
+                      
+                    )
+                  }
                 </Grid>
                  
                 </>
@@ -405,6 +488,7 @@ useEffect(() => {
               )
             })
           }
+
           </Grid>
                 
           <Grid style={{position: "absolute", 
@@ -421,7 +505,7 @@ useEffect(() => {
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
-              <SendIcon onClick={sendMessage} className={classes.sendIcon}/>
+              <SendIcon onClick={sendMsg} className={classes.sendIcon}/>
             </InputAdornment>
           ),
         }}
