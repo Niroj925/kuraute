@@ -18,6 +18,11 @@ import 'react-toastify/dist/ReactToastify.css';
 import DialogBox from '../../component/creatGroup';
 import SendIcon from '@mui/icons-material/Send';
 import ScrollableFeed from 'react-scrollable-feed';
+import io from 'socket.io-client';
+
+const ENDPOINT='http://localhost:8080';
+var socket,selectedChatCompare;
+
 const useStyles = makeStyles({
   root: {
     display: 'flex',
