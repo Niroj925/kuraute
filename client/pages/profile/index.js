@@ -20,6 +20,8 @@ import SendIcon from '@mui/icons-material/Send';
 import ScrollableFeed from 'react-scrollable-feed';
 import io from 'socket.io-client';
 
+
+
 const ENDPOINT='http://localhost:8080';
 var socket,selectedChatCompare;
 
@@ -113,6 +115,7 @@ export default function UnstyledTabsIntroduction() {
  const [openDialog, setOpenDialog] = useState(false);
  const [message,setMessage]=useState([]);
  const [newMessage,setNewMessage]=useState();
+const [socketConnected,setSocketConnected]=useState(false);
 
   const router=useRouter();
 
@@ -122,6 +125,13 @@ export default function UnstyledTabsIntroduction() {
   const handleChange=(event,newValue) =>{
     setValue(newValue);
 }
+
+useEffect(()=>{
+  socket=io(ENDPOINT);
+  socket.emit('setup',userid);
+  socket.on('connection',()=>setSocketConnected(true));
+},[])
+
 const fetchChats = async () => {
   try {
     const response = await axios.get(
@@ -266,61 +276,102 @@ useEffect(() => {
     
     }
 
-    const sendMsg=async(event)=>{
-      
-        try{
-          const response = await axios.post(
-            'http://localhost:8080/api/message',
-            {
-              msg:newMessage,
-              chatId:selectedChat._id
-            },
-            {
-              headers: {
-                token: JSON.parse(localStorage.getItem("token"))
-              }
-            })
-          setNewMessage('');
-          // setMessage([...message,response.data.content]);
-          fetchMessage();
-          console.log("message set :")
-          console.log(message);
-        }catch(err){
-          console.log(err);
-        }
-      
-    
-    }
-
-    const fetchMessage=async()=>{
-            console.log(selectedChat);
-      try{
-        const response = await axios.get(
-          `http://localhost:8080/api/message/${selectedChat._id}`,
-          // {
-          //   msg:newMessage,
-          //   chatId:selectedChat._id
-          // },
+    const sendMsg = async () => {
+      try {
+        const { data } = await axios.post(
+          'http://localhost:8080/api/message',
+          {
+            msg: newMessage,
+            chatId: selectedChat._id
+          },
           {
             headers: {
               token: JSON.parse(localStorage.getItem("token"))
             }
-          })
-        console.log(response.data)
-        
+          }
+        );
+    
         setNewMessage('');
-        // setMessage([]);
-        setMessage(response.data);
-      }catch(err){
+        socket.emit('new message', data);
+        // setMessage(prevMessages => [...prevMessages, data]);
+        setMessage([...message,data]);
+      } catch (err) {
         console.log(err);
       }
-    }
+    };
+
+    
+
+
+const fetchMessage = async () => {
+  try {
+    // const response = await axios.get(
+    //   `http://localhost:8080/api/message/${selectedChat._id}`,
+    //   {
+    //     headers: {
+    //       token: JSON.parse(localStorage.getItem("token"))
+    //     }
+    //   }
+    // );
+
+    // setNewMessage('');
+    // setMessage(response.data);
+    // socket.emit('join chat', selectedChat._id);
+
+    const response = await axios.get(
+      `http://localhost:8080/api/message/${selectedChat._id}`,
+      {
+        headers: {
+          token: JSON.parse(localStorage.getItem("token"))
+        }
+      }
+    );
+    
+    setMessage(response.data);
+    setNewMessage('');
+    socket.emit('join chat', selectedChat._id);
+
+  } catch (err) {
+    console.log(err);
+  }
+};
 
     useEffect(()=>{
       fetchMessage();
+      selectedChatCompare=selectedChat;
     },[selectedChat])
-
     
+  // useEffect(() => {
+  //   socket.on('new message', (newMessageRecieved) => {
+  //     console.log('message received:')
+  //     console.log(newMessageRecieved);
+  //     if (
+  //       !selectedChatCompare || // if chat is not selected or doesn't match current chat
+  //       selectedChatCompare._id !== newMessageRecieved.chat._id
+  //     ) {
+  //       // if (!notification.includes(newMessageRecieved)) {
+  //       //   setNotification([newMessageRecieved, ...notification]);
+  //       //   setFetchAgain(!fetchAgain);
+  //       // }
+  //     } else {
+  //       setMessage([...message, newMessageRecieved]);
+  //     }
+  //   });
+  // });
+  useEffect(() => {
+    socket.on('message received', (newMessageReceived) => {
+      console.log('message received:')
+      console.log(newMessageReceived);
+      if (!selectedChatCompare || selectedChatCompare._id !== String(newMessageReceived.chat._id)) {
+        // if chat is not selected or doesn't match current chat
+        // setNotification([newMessageReceived, ...notification]);
+        // setFetchAgain(!fetchAgain);
+      } else {
+        setMessage([...message, newMessageReceived]);
+      }
+    });
+  }, [selectedChatCompare, message]);
+
   return (
      <>
      <Grid>
@@ -456,7 +507,7 @@ useEffect(() => {
           <Typography>Click User to start Chat</Typography>
           <Divider style={{marginTop:"10px",marginBottom:"10px"}}/>
           <Divider style={{marginBottom:"10px"}}/>
-          <Grid container style={{ maxHeight: "300px", overflow: "auto" ,marginBottom:"15px" }}>
+          <Grid container style={{ maxHeight: "250px", overflow: "auto" ,marginBottom:"15px" }}>
             {
             message&&message.map((msg)=>{
               return (

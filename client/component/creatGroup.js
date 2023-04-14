@@ -110,7 +110,6 @@ function creatGroup(props) {
               progress: undefined,
               theme: "light",
               });
-              onClose
               setSelectedUsers([]);
               setChatName('');
               

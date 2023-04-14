@@ -32,7 +32,9 @@ app.get('/posts', async (req, res) => {
   });
 
 const server=http.createServer(app);
+
 const io=new Server(server,{
+  pingTimeout:50000,
     cors:{
     origin:"http://localhost:3000",
     methods:["GET","POST","PUT","DELETE"]
@@ -40,24 +42,61 @@ const io=new Server(server,{
 })
 
 io.on('connection',(socket)=>{
-    console.log(`user connected id :${socket.id}`);
+    console.log(`user connected to socket.io`);
 
-    // //listen event
-    // socket.on('send_message',(data)=>{
-    //     console.log(data);
-    //     socket.broadcast.emit('receive_message',data)
-    // })
+    //listen event
+     socket.on('setup',(userData)=>{
+       console.log(userData);
+       socket.join(userData);
+       socket.emit("connected")
+    })
 
-    socket.on('join_room',(data)=>{
+    socket.on('join chat',(room)=>{
         //id of the room 
-        socket.join(data)
+        socket.join(room)
+        console.log('user joined room:'+room);
     })
 
-    socket.on('send_message',(data)=>{
-        socket.to(data.room).emit('receive_message',data)
+    // socket.on('new message', (newMessageReceived) => {
+    //   var chat = newMessageReceived.chat;
+    
+    //   if (!chat || !chat.users) {
+    //     console.log('chat or chat.users not defined');
+    //     return;
+    //   }
+    
+    //   chat.users.forEach((user) => {
+    //     if (user._id == newMessageReceived.sender._id) return;
+    
+    //     socket.in(user._id).emit('message received', newMessageReceived);
+    //   });
+    // });
+
+    socket.on('new message',(newMessageReceived)=>{
+      console.log('message received:')
+      console.log(newMessageReceived)
+      console.log('user:');
+      console.log(newMessageReceived.chat.user)
+      var chat=newMessageReceived.chat;
+      console.log(chat._id)
+      if(!chat || !chat.user) return console.log('chat.user not defined');
+    
+      chat.user.forEach((usr)=>{
+        if(usr._id == newMessageReceived.sender._id) return ;
+        console.log(usr.name);
+        // socket.to(usr._id).emit('message received',newMessageReceived)
+        socket.to(chat._id).emit('message received',newMessageReceived)
+      })
     })
+
+
+    // socket.on('send_message',(data)=>{
+    //     socket.to(data.room).emit('receive_message',data)
+    // })
+ 
 })
 
-server.listen(8080,()=>{
-    console.log("server is running");
+ server.listen(8080,()=>{
+  console.log("server is running");
 })
+

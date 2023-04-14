@@ -31,7 +31,6 @@ export default function SignUpForm() {
 
   const handleSubmit = async(event) => {
     event.preventDefault();
-    console.log(`Email: ${email}, Password: ${password} name:${username}`);
     const data={
       "name":username,
       "email":email,
