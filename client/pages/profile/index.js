@@ -1,8 +1,8 @@
-import * as React from 'react';
+
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
-import { useState, useEffect } from 'react';
+import { useState, useEffect ,useRef} from 'react';
 import axios from 'axios';
 import { TextField, InputAdornment,Tab, Grid,Box,Divider,Tooltip, Typography,Button, Dialog,Chip,FormControl,
   DialogTitle,
@@ -118,6 +118,7 @@ export default function UnstyledTabsIntroduction() {
 const [socketConnected,setSocketConnected]=useState(false);
 
   const router=useRouter();
+const messageContainerRef = useRef(null);
 
   const classes = useStyles();
   const { userid } = router.query
@@ -293,7 +294,6 @@ useEffect(() => {
     
         setNewMessage('');
         socket.emit('new message', data);
-        // setMessage(prevMessages => [...prevMessages, data]);
         setMessage([...message,data]);
       } catch (err) {
         console.log(err);
@@ -305,19 +305,6 @@ useEffect(() => {
 
 const fetchMessage = async () => {
   try {
-    // const response = await axios.get(
-    //   `http://localhost:8080/api/message/${selectedChat._id}`,
-    //   {
-    //     headers: {
-    //       token: JSON.parse(localStorage.getItem("token"))
-    //     }
-    //   }
-    // );
-
-    // setNewMessage('');
-    // setMessage(response.data);
-    // socket.emit('join chat', selectedChat._id);
-
     const response = await axios.get(
       `http://localhost:8080/api/message/${selectedChat._id}`,
       {
@@ -371,6 +358,13 @@ const fetchMessage = async () => {
       }
     });
   }, [selectedChatCompare, message]);
+
+  useEffect(() => {
+    // scroll to the bottom of the message container
+    if (messageContainerRef.current) {
+      messageContainerRef.current.scrollTop = messageContainerRef.current.scrollHeight;
+    }
+  }, [message]);
 
   return (
      <>
@@ -507,7 +501,11 @@ const fetchMessage = async () => {
           <Typography>Click User to start Chat</Typography>
           <Divider style={{marginTop:"10px",marginBottom:"10px"}}/>
           <Divider style={{marginBottom:"10px"}}/>
-          <Grid container style={{ maxHeight: "250px", overflow: "auto" ,marginBottom:"15px" }}>
+          {/* <Grid container style={{ maxHeight: "250px", overflow: "auto" ,marginBottom:"15px" }}> */}
+            
+      <Grid container 
+      style={{ maxHeight: "250px", overflow: "auto", marginBottom: "15px" }} 
+      ref={messageContainerRef}>
             {
             message&&message.map((msg)=>{
               return (
@@ -526,7 +524,6 @@ const fetchMessage = async () => {
                       </>
                     ):(
                       <>
-                      {/* <Avatar style={{ width: '30px', height: '30px',marginRight:"5px"}}/> */}
                       <Tooltip title={msg.sender.name}>
                          <Avatar style={{ width: '30px', height: '30px', marginRight: '5px' }} />
                       </Tooltip>
@@ -544,7 +541,6 @@ const fetchMessage = async () => {
               )
             })
           }
-
           </Grid>
                 
           <Grid style={{position: "absolute", 
