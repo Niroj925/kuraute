@@ -38,7 +38,7 @@ export default function SignUpForm() {
     if(res){     
       toast.success('Successfully login', {
         position: "bottom-right",
-        autoClose: 5000,
+        autoClose: 3000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,

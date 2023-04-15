@@ -85,9 +85,11 @@ io.on('connection',(socket)=>{
     })
 
 
-    // socket.on('send_message',(data)=>{
-    //     socket.to(data.room).emit('receive_message',data)
-    // })
+    socket.on('disconnect', (userData) => {
+      console.log(userData)
+      console.log('user disconnected');
+      socket.leave(userData._id);
+    });
  
 })
 
