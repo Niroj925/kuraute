@@ -57,20 +57,15 @@ io.on('connection',(socket)=>{
         console.log('user joined room:'+room);
     })
 
-    // socket.on('new message', (newMessageReceived) => {
-    //   var chat = newMessageReceived.chat;
-    
-    //   if (!chat || !chat.users) {
-    //     console.log('chat or chat.users not defined');
-    //     return;
-    //   }
-    
-    //   chat.users.forEach((user) => {
-    //     if (user._id == newMessageReceived.sender._id) return;
-    
-    //     socket.in(user._id).emit('message received', newMessageReceived);
-    //   });
-    // });
+    socket.on('typing',(room)=>{
+      socket.to(room).emit('typing')
+    })
+
+    socket.on('stop typing',(room)=>
+    {
+      socket.to(room).emit('stop typing')
+    })
+
 
     socket.on('new message',(newMessageReceived)=>{
       console.log('message received:')

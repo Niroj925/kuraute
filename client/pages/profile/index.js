@@ -19,8 +19,18 @@ import DialogBox from '../../component/creatGroup';
 import SendIcon from '@mui/icons-material/Send';
 import ScrollableFeed from 'react-scrollable-feed';
 import io from 'socket.io-client';
+import Lottie from 'react-lottie'
+import animationData from '../../animation/data.json';
 
 
+const defaultOptions = {
+  loop: true,
+  autoplay: true,
+  animationData: animationData,
+  rendererSettings: {
+    preserveAspectRatio: "xMidYMid slice",
+  },
+};
 
 const ENDPOINT='http://localhost:8080';
 var socket,selectedChatCompare;
@@ -116,6 +126,9 @@ export default function UnstyledTabsIntroduction() {
  const [message,setMessage]=useState([]);
  const [newMessage,setNewMessage]=useState();
 const [socketConnected,setSocketConnected]=useState(false);
+const [typing,setTyping]=useState(false);
+const [isTyping,setIsTyping]=useState(false);
+
 
   const router=useRouter();
 const messageContainerRef = useRef(null);
@@ -130,7 +143,9 @@ const messageContainerRef = useRef(null);
 useEffect(()=>{
   socket=io(ENDPOINT);
   socket.emit('setup',userid);
-  socket.on('connection',()=>setSocketConnected(true));
+  socket.on('connected',()=>setSocketConnected(true));
+  socket.on('typing',()=>setIsTyping(true));
+  socket.on('stop typing',()=>setIsTyping(false));
 },[])
 
 const fetchChats = async () => {
@@ -257,6 +272,24 @@ useEffect(() => {
 
     const handleInputChange = (event) => {
       setNewMessage(event.target.value);
+
+      if (!socketConnected) return;
+
+      if (!typing) {
+        setTyping(true);
+        socket.emit('typing', selectedChat._id);
+      }
+      let lastTypingTime = new Date().getTime();
+      var timerLength = 4000;
+      setTimeout(() => {
+        var timeNow = new Date().getTime();
+        var timeDiff = timeNow - lastTypingTime;
+        if (timeDiff >= timerLength && typing) {
+         
+          socket.emit('stop typing', selectedChat._id);
+          setTyping(false);
+        }
+      }, timerLength);
     }
   
     const handleSubmit = (event) => {
@@ -270,6 +303,7 @@ useEffect(() => {
     const sendMessage=async(event)=>{
       
       if(event.key==='Enter'){
+        // socket.emit('stop typing',selectedChat._id);
        sendMsg();
        fetchMessage();
        console.log(message)
@@ -328,23 +362,6 @@ const fetchMessage = async () => {
       selectedChatCompare=selectedChat;
     },[selectedChat])
     
-  // useEffect(() => {
-  //   socket.on('new message', (newMessageRecieved) => {
-  //     console.log('message received:')
-  //     console.log(newMessageRecieved);
-  //     if (
-  //       !selectedChatCompare || // if chat is not selected or doesn't match current chat
-  //       selectedChatCompare._id !== newMessageRecieved.chat._id
-  //     ) {
-  //       // if (!notification.includes(newMessageRecieved)) {
-  //       //   setNotification([newMessageRecieved, ...notification]);
-  //       //   setFetchAgain(!fetchAgain);
-  //       // }
-  //     } else {
-  //       setMessage([...message, newMessageRecieved]);
-  //     }
-  //   });
-  // });
   useEffect(() => {
     socket.on('message received', (newMessageReceived) => {
       console.log('message received:')
@@ -541,12 +558,31 @@ const fetchMessage = async () => {
               )
             })
           }
+
+{isTyping?
+      <div>
+        <Lottie
+         options={defaultOptions}
+         width={60}
+         style={{marginBottom:10,marginLeft:5}}
+        />
+      </div>:<></>}
           </Grid>
                 
           <Grid style={{position: "absolute", 
           bottom: 0, left:0,
           width: "100%"}}>
+         
+            
     <FormControl onKeyDown={sendMessage} fullWidth={true}>
+      {/* {isTyping?
+      <div>
+        <Lottie
+         options={defaultOptions}
+         width={60}
+         style={{marginBottom:10,marginLeft:5}}
+        />
+      </div>:<></>} */}
       <TextField
         id="inputField"
         variant="outlined"
