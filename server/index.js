@@ -8,8 +8,12 @@ import router from './route/userRoutes.js';
 import {notfound,errHandler} from './middleware/errMiddleware.js';
 import chatRoute from './route/chatRoute.js';
 import messageRoute from "./route/messageRoute.js";
+import path from 'path';
+import 'dotenv/config'
 
 const app=express();
+const PORT=process.env.PORT||8080;
+
 app.use(express.json());//to accept json data
 app.use(cors());
 
@@ -18,25 +22,33 @@ connectDB();
 app.use('/api/user',router);
 app.use('/api/chat',chatRoute);
 app.use('/api/message',messageRoute);
+
+//deployment
+const __dirname=path.resolve();
+
+if(process.env.NODE_ENV==='production'){
+ app.use(express.static(path.join(__dirname,"/client/.next/server/pages")));
+
+ app.get("*",(req,res)=>{
+  res.sendFile(path.resolve(__dirname,"client",".next","server","pages","index.html" ))
+ })
+}else{
+  app.get("/",(req,res)=>{
+    res.send('API is running successfully')  
+  })
+}
+
 //to handle error
 app.use(notfound);
 app.use(errHandler);
-app.get('/posts', async (req, res) => {
-    try {
-      const response = await axios.get('https://jsonplaceholder.typicode.com/posts');
-      res.status(200).json(response.data);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: 'Internal server error' });
-    }
-  });
 
 const server=http.createServer(app);
 
 const io=new Server(server,{
   pingTimeout:50000,
     cors:{
-    origin:"http://localhost:3000",
+    // origin:"http://localhost:3000",
+    origin:process.env.BASE_URL,
     methods:["GET","POST","PUT","DELETE"]
     }
 })
@@ -86,14 +98,13 @@ io.on('connection',(socket)=>{
 
 
     socket.on('disconnect', (userData) => {
-      console.log(userData)
       console.log('user disconnected');
       socket.leave(userData._id);
     });
  
 })
 
- server.listen(8080,()=>{
+ server.listen(PORT,()=>{
   console.log("server is running");
 })
 

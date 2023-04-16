@@ -8,19 +8,17 @@ export default function Navbar() {
   return (
     <nav className={styles.navbar}>
       <ul className={styles.navbarMenu}>
-        <li className={styles.navbarItem}>
-          <Link href="/">
-            {/* <a className={styles.navbarLink}>Home</a> */}
-            Home
-          </Link>
-        </li>
-        <li className={styles.navbarItem}>
-          <Link href="/about">
-            {/* <a className={styles.navbarLink}>About</a> */}
-            About
-          </Link>
-        </li>
-      </ul>
+  <li className={styles.navbarItems}>
+    <Link href="/" className={styles.navLink}>
+      Home
+    </Link>
+  </li>
+  <li className={styles.navbarItem}>
+    <Link href="/about" className={styles.navLink}>
+      About
+    </Link>
+  </li>
+</ul>
       <div className={styles.navbarButtons}>
         <Link href='/login' className={styles.loginButton}>
             Login

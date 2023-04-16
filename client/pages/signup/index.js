@@ -5,7 +5,10 @@ import api from '../api/config.js';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {Grid} from "@mui/material";
-
+import {useRouter, userRouter} from 'next/router';
+import Navbar from '../../component/navbar.js';
+import Footer from '../../component/footer.js'
+import Link from 'next/link';
 
 export default function SignUpForm() {
   const [email, setEmail] = useState('');
@@ -13,6 +16,7 @@ export default function SignUpForm() {
   const [username,setUsername]=useState(' ');
   const [showPassword, setShowPassword] = useState(false);
 
+   const router=useRouter();
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
   };
@@ -41,7 +45,7 @@ export default function SignUpForm() {
     if(res){
         toast.success('Successfully created Account', {
           position: "bottom-right",
-          autoClose: 5000,
+          autoClose: 3000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
@@ -49,11 +53,16 @@ export default function SignUpForm() {
           progress: undefined,
           theme: "light",
           });
+          
+          // router.push('/login');
+          setTimeout(() => {
+            router.push('/login');
+          }, 3000);
         }
         else{
           toast.error("Unable to create Account", {
             position: "bottom-right",
-            autoClose: 5000,
+            autoClose: 3000,
             hideProgressBar: false,
             closeOnClick: true,
             pauseOnHover: true,
@@ -61,6 +70,9 @@ export default function SignUpForm() {
             progress: undefined,
             theme: "light",
             });
+            setTimeout(() => {
+              router.push('/');
+            }, 3000);
         }
     
     setEmail('');
@@ -70,8 +82,10 @@ export default function SignUpForm() {
 
   return (
     <Grid>
+      <Navbar/>
     <form className={styles.form} onSubmit={handleSubmit}>
       <h2 className={styles.formTitle}>Sign Up</h2>
+      <hr/>
       <div className={styles.formGroup}>
         <label htmlFor="username" className={styles.formLabel}>Full Name</label>
         <input
@@ -118,12 +132,15 @@ export default function SignUpForm() {
         <button type="submit" className={styles.submitButton}>Sign Up</button>
       </div>
       <div className={styles.formGroup}>
-        <a href="#" className={styles.forgotPasswordLink}>Forgot password?</a>
+        {/* <a href="#" className={styles.forgotPasswordLink}>Forgot password?</a> */}
+        <Link href="#" className={styles.forgotPasswordLink}>Forgot password?</Link>
         <span className={styles.separator}>|</span>
-        <a href="/login" className={styles.signUpLink}>Sign In</a>
+        {/* <a href="/login" className={styles.signUpLink}>Sign In</a> */}
+        <Link href="/login" className={styles.signUpLink}>Sign In</Link>
       </div>
     </form>
     <ToastContainer/>
+    <Footer/>
     </Grid>
   );
 }

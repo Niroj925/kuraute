@@ -4,7 +4,10 @@ import api from '../api/config.js';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Link from 'next/link';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useRouter } from 'next/router';
+import Navbar from '../../component/navbar.js'
+import Footer from '../../component/footer.js'
 
 export default function SignUpForm() {
   const router = useRouter();
@@ -53,7 +56,7 @@ export default function SignUpForm() {
         else{
           toast.error("Unable to login", {
             position: "bottom-right",
-            autoClose: 5000,
+            autoClose: 3000,
             hideProgressBar: false,
             closeOnClick: true,
             pauseOnHover: true,
@@ -61,6 +64,9 @@ export default function SignUpForm() {
             progress: undefined,
             theme: "light",
             });
+            setTimeout(() => {
+              router.push('/login');
+            }, 3000);
         }
     setEmail('');
     setPassword('');
@@ -68,8 +74,10 @@ export default function SignUpForm() {
 
   return (
     <>
+    <Navbar/>
     <form className={styles.form} onSubmit={handleSubmit}>
       <h2 className={styles.formTitle}>Login</h2>
+      <hr/>
       <div className={styles.formGroup}>
         <label htmlFor="email" className={styles.formLabel}>Email</label>
         <input
@@ -97,7 +105,7 @@ export default function SignUpForm() {
             className={styles.showPasswordButton}
             onClick={handleShowPassword}
           >
-            {showPassword ? 'Hide' : 'Show'}
+            {showPassword ? <FaEyeSlash className={styles.showPasswordButton}/> : <FaEye className={styles.showPasswordButton}/>}
           </button>
         </div>
       </div>
@@ -105,12 +113,15 @@ export default function SignUpForm() {
         <button type="submit" className={styles.submitButton}>Login</button>
       </div>
       <div className={styles.formGroup}>
-        <a href="#" className={styles.forgotPasswordLink}>Forgot password?</a>
+        {/* <a href="#" className={styles.forgotPasswordLink}>Forgot password?</a> */}
+        <Link href="#" className={styles.forgotPasswordLink}>Forgot password?</Link>
         <span className={styles.separator}>|</span>
-        <a href="/signup" className={styles.signUpLink}>Sign up</a>
+        {/* <a href="/signup" className={styles.signUpLink}>Sign up</a> */}
+        <Link href="/signup" className={styles.signUpLink}>Sign up</Link>
       </div>
     </form>
     <ToastContainer/>
+    <Footer/>
     </>
   );
 }

@@ -21,15 +21,32 @@
     margin-right: 10px;
   }
   
+  .navbarItems {
+    margin-right: 10px;
+    text-decoration: none;
+    font-size: 15;
+  }
+
+  .navLink{
+    color:#333;
+    text-decoration: none;
+    font-size:large;
+    
+  }
+  .navLink:hover{
+    font-weight: bold;
+    color:darkcyan
+  }
+
   .navbarLink {
     display: block;
     padding: 10px 15px;
     color: #333;
     font-weight: bold;
     text-decoration: none;
-  }
+  } 
   
-  .navbarLink:hover {
+   .navbarLink:hover {
     background-color: #f2f2f2;
   }
   

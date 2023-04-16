@@ -19,6 +19,11 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import DialogBox from '../../component/creatGroup';
 import SendIcon from '@mui/icons-material/Send';
+import ChatIcon from '@mui/icons-material/Chat';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import LogoutIcon from '@mui/icons-material/Logout';
+import PersonIcon from '@mui/icons-material/Person';
 import ScrollableFeed from 'react-scrollable-feed';
 import io from 'socket.io-client';
 import Lottie from 'react-lottie'
@@ -435,11 +440,14 @@ const fetchMessage = async () => {
      <TabContext value={value}  >
    
   <TabList onChange={handleChange} className={classes.tabList} >
-  <Tab label="Friends" value="1" style={{ flex: 1 }} />
+  <Tab label="Friends" value="1" style={{ flex: 1 }} 
+    icon={<PersonAddIcon/>}
+
+  />
   <Tab label="Chat"
    value="2" 
    style={{ flex: 1 }} 
-   
+    icon={<ChatIcon/>}
    />
   <Tab label="Profile" 
   value="3" 
@@ -448,7 +456,7 @@ const fetchMessage = async () => {
   aria-haspopup="true"
   onMouseOver={handleMenu}
   onFocus={handleMenu}
-  // onMouseOut={handleMenuClose}
+  icon={<AccountCircleIcon/>}
   />
    <Menu
           id="simple-menu"
@@ -456,19 +464,29 @@ const fetchMessage = async () => {
           keepMounted
           open={Boolean(anchorEl)}
           onClose={handleClosem}
-
+          alignItems='center'
+          display='flex'
+          justifyContent='center'
           // className={classes.dropdown}
         >
-          <MenuItem onClick={profilePage}>Profile</MenuItem>
-          <MenuItem onClick={handleLogout}>Logout</MenuItem>
+          <MenuItem onClick={profilePage} style={{fontWeight:'bold'}}>
+            Profile
+          <PersonIcon/>
+          </MenuItem>
+          <MenuItem onClick={handleLogout} style={{fontWeight:'bold',}}>
+            Logout 
+            <LogoutIcon/>
+            </MenuItem>
         </Menu>
 </TabList>
 
 <TabPanel value='1'>
   <Grid container>
     {/* User List */}
-    <Grid item xs={12} md={9} lg={6} style={{ height: 'calc(100vh - 64px)' }}>
+    <Grid item xs={12} md={6} lg={6} style={{ height: 'calc(100vh - 64px)' }}>
       <div>
+        <Typography variant='h4'>Click users to start Chat</Typography>
+        <Divider style={{marginBottom:'5px',marginTop:"5px"}}/>
         <TextField
           label="Search for friends"
           value={searchQuery}
@@ -481,7 +499,7 @@ const fetchMessage = async () => {
             ),
           }}
         />
-        <Divider/>
+        <Divider style={{marginBottom:'10px',marginTop:"5px"}}/>
         <div style={{ overflowY: 'scroll', height: 'calc(100% - 56px)' ,margin:'10px'}}>
           {users &&
             users.map((user) => (

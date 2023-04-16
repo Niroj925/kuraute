@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
   },
   hero: {
     height: '100vh',
-    backgroundImage: 'url(https://picsum.photos/id/237/1600/900)',
+    backgroundImage: 'url("../image/bg.png")',
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     display: 'flex',
@@ -28,6 +28,7 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: 'center',
     color: 'white',
     marginBottom:"10px",
+    color:"grey"
   },
   main: {
     marginBottom: "10px",
@@ -57,7 +58,7 @@ const HomePage = () => {
   return (
     <div className={classes.root}>
       <div className={classes.hero}>
-        <Typography variant="h1" align="center">
+        <Typography variant="h1" align="center" >
           Welcome to Kuraute
         </Typography>
       </div>
@@ -82,7 +83,7 @@ const HomePage = () => {
             <Card className={classes.card}>
               <CardMedia
                 className={classes.cardMedia}
-                image="https://picsum.photos/id/1053/200/200"
+                image="../image/snr.png"
                 title="Chat on Kuraute"
               />
               <CardContent className={classes.cardContent}>

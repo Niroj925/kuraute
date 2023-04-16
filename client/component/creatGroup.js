@@ -128,14 +128,14 @@ function creatGroup(props) {
   return (
     <>
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>This is a Simple Dialog</DialogTitle>
+      <DialogTitle>Create your group</DialogTitle>
       <Divider/>
       <DialogContent>
         <div>
           <div>
             <TextField
               id="chat-name-input"
-              label="Chat Name"
+              label="Group Chat Name"
               value={chatName}
               onChange={(e) => setChatName(e.target.value)}
               fullWidth
