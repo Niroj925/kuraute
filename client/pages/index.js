@@ -3,8 +3,7 @@ import io from 'socket.io-client';
 import { useEffect,useState } from 'react';
 import Navbar from '../component/navbar';
 import axios from 'axios'
-
-const socket=io.connect('http://localhost:8080')
+import  HomePage from '../component/homepage';
 
 function index() {
   const [message,setMessage]=useState('');
@@ -15,7 +14,8 @@ function index() {
 
   return (
     <div className='container'>
-      <Navbar/>     
+      <Navbar/>    
+      <HomePage/> 
     </div>
   )
 }

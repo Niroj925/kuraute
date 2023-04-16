@@ -9,7 +9,7 @@ import { Card, CardContent, Avatar} from "@mui/material";
 import makeStyles from '@mui/styles/makeStyles';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import SearchIcon from '@mui/icons-material/Search';
 
 const useStyles = makeStyles({
    
@@ -32,7 +32,12 @@ const useStyles = makeStyles({
       marginRight: 5,
       marginLeft:5
     },
-
+    searchIcon:{
+      cursor:'pointer',
+      "&:hover":{
+        color:'blue'
+      }
+    }
   });
 function creatGroup(props) {
     const {open, onClose } = props;
@@ -122,66 +127,85 @@ function creatGroup(props) {
 
   return (
     <>
-       <Dialog open={open} onClose={onClose}>
-        <DialogTitle>This is a Simple Dialog</DialogTitle>
-        <DialogContent>
+    <Dialog open={open} onClose={onClose}>
+      <DialogTitle>This is a Simple Dialog</DialogTitle>
+      <Divider/>
+      <DialogContent>
         <div>
-      <div>
-        <label htmlFor="chat-name-input">Chat Name:</label>
-        <input
-          id="chat-name-input"
-          type="text"
-          value={chatName}
-          onChange={(e) => setChatName(e.target.value)}
-        />
-      </div>
-      <div>
-        <label htmlFor="user-search-input">Search Users:</label>
-        <input
-          id="user-search-input"
-          type="text"
-          value={searchUser}
-          onChange={(e) => setSearchUser(e.target.value)}
-        />
-        <button onClick={handleSearchUser}>Search</button>
-      </div>
-      <div>
-      {selectedUsers.map((user) => (
-          <Chip label={user.name} variant="outlined" onDelete={() => handleRemoveUser(user)} />
-        ))}
+          <div>
+            <TextField
+              id="chat-name-input"
+              label="Chat Name"
+              value={chatName}
+              onChange={(e) => setChatName(e.target.value)}
+              fullWidth
+              margin="normal"
+              size='small'
+            />
+          </div>
+          <div>
+            <TextField
+              id="user-search-input"
+              label="Search Users"
+              value={searchUser}
+              onChange={(e) => setSearchUser(e.target.value)}
+              fullWidth
+              margin="normal"
+              size='small'
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <SearchIcon onClick={handleSearchUser} className={classes.searchIcon}/>
+                  </InputAdornment>
+                ),
+              }}
 
-      </div>
-      <div>    
-         {searchResults &&
-            searchResults.map((user) => (
-              <Card key={user.id} className={classes.dcard} onClick={()=>handleAddUser(user)}>
-                <Avatar className={classes.davatar}>
-                  {user.name
-                    .split(" ")
-                    .map((word) => word.charAt(0).toUpperCase())
-                    .join("")}
-                </Avatar>
-                <CardContent>
-                  <p>{user.name}</p>
-                  {/* <p>{user.user}</p> */}
-                </CardContent>
-              </Card>
+            />
+            {/* <Button variant="contained" color="primary" onClick={handleSearchUser}>Search</Button> */}
+          </div>
+          <Divider/>
+          <div>
+            {selectedUsers.map((user) => (
+              <Chip
+                key={user.id}
+                label={user.name}
+                variant="outlined"
+                onDelete={() => handleRemoveUser(user)}
+                style={{ margin: '4px' }}
+              />
             ))}
-      </div>
-   
-      <div>
-        <button onClick={handleCreateChat}>Create Chat</button>
-      </div>
-    </div>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={onClose} color="primary">
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
-      <ToastContainer/>
-      </>
+          </div>
+          <Divider/>
+          <div>
+            {searchResults &&
+              searchResults.map((user) => (
+                <Card key={user.id} className={classes.dcard} onClick={() => handleAddUser(user)}>
+                  <Avatar className={classes.davatar}>
+                    {user.name
+                      .split(' ')
+                      .map((word) => word.charAt(0).toUpperCase())
+                      .join('')}
+                  </Avatar>
+                  <CardContent>
+                    <Typography variant="h6">{user.name}</Typography>
+                    {/* <p>{user.user}</p> */}
+                  </CardContent>
+                </Card>
+              ))}
+          </div>
+          <div>
+            <Button variant="contained" color="primary" onClick={handleCreateChat}>Create Chat</Button>
+          </div>
+        </div>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose} color="primary">
+          Close
+        </Button>
+      </DialogActions>
+    </Dialog>
+    <ToastContainer />
+  </>
   )
 }
 

@@ -6,6 +6,8 @@ import { useState, useEffect ,useRef} from 'react';
 import axios from 'axios';
 import { TextField, InputAdornment,Tab, Grid,Box,Divider,Tooltip, Typography,Button, Dialog,Chip,FormControl,
   DialogTitle,
+  Menu,
+  MenuItem,
   DialogContent,
   DialogActions,} from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
@@ -36,6 +38,24 @@ const ENDPOINT='http://localhost:8080';
 var socket,selectedChatCompare;
 
 const useStyles = makeStyles({
+  sm: {
+    '@media (max-width: 450px)': {
+      maxWidth: '320px',
+      maxHeight:'350px'
+    },
+  },
+  md: {
+    '@media (min-width: 451px) and (max-width: 750px)': {
+      maxWidth: '750px',
+      maxHeight:'350px'
+    },
+  },
+  lg: {
+    '@media (min-width: 750px) and (max-width: 1200px)': {
+      maxWidth: '900px',
+      maxHeight:'350px'
+    },
+  },
   root: {
     display: 'flex',
     alignItems: 'center',
@@ -83,9 +103,11 @@ const useStyles = makeStyles({
     tabList:{
       display:"flex",
       justifyContent:"space-between",
+      backgroundColor: "#eee",
       "&:hover": {
         transform: "scale(1.01)",
-        backgroundColor: "#eee",
+          color:'black',
+          fontWeight:"bold"
       }
     },
     
@@ -128,7 +150,7 @@ export default function UnstyledTabsIntroduction() {
 const [socketConnected,setSocketConnected]=useState(false);
 const [typing,setTyping]=useState(false);
 const [isTyping,setIsTyping]=useState(false);
-
+const [anchorEl, setAnchorEl] = useState(null);
 
   const router=useRouter();
 const messageContainerRef = useRef(null);
@@ -383,6 +405,28 @@ const fetchMessage = async () => {
     }
   }, [message]);
 
+
+  const handleMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClosem = () => {
+    setAnchorEl(null);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    router.push("/login");
+  };
+
+  const profilePage=()=>{
+    setAnchorEl(null)
+    setValue("3")
+  }
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
      <>
      <Grid>
@@ -392,14 +436,38 @@ const fetchMessage = async () => {
    
   <TabList onChange={handleChange} className={classes.tabList} >
   <Tab label="Friends" value="1" style={{ flex: 1 }} />
-  <Tab label="Chat" value="2" style={{ flex: 1 }} />
-  <Tab label="Profile" value="3" style={{ flex: 1 }} />
+  <Tab label="Chat"
+   value="2" 
+   style={{ flex: 1 }} 
+   
+   />
+  <Tab label="Profile" 
+  value="3" 
+  style={{ flex: 1 }}
+  aria-controls="simple-menu"
+  aria-haspopup="true"
+  onMouseOver={handleMenu}
+  onFocus={handleMenu}
+  // onMouseOut={handleMenuClose}
+  />
+   <Menu
+          id="simple-menu"
+          anchorEl={anchorEl}
+          keepMounted
+          open={Boolean(anchorEl)}
+          onClose={handleClosem}
+
+          // className={classes.dropdown}
+        >
+          <MenuItem onClick={profilePage}>Profile</MenuItem>
+          <MenuItem onClick={handleLogout}>Logout</MenuItem>
+        </Menu>
 </TabList>
 
 <TabPanel value='1'>
   <Grid container>
     {/* User List */}
-    <Grid item xs={6} style={{ height: 'calc(100vh - 64px)' }}>
+    <Grid item xs={12} md={9} lg={6} style={{ height: 'calc(100vh - 64px)' }}>
       <div>
         <TextField
           label="Search for friends"
@@ -433,12 +501,16 @@ const fetchMessage = async () => {
         </div>
       </div>
     </Grid>
+  </Grid>
+</TabPanel>
+      <TabPanel value='2'>
 
-    {/* Chat Friends */}
-    <Grid item xs={6} style={{ height: 'calc(100vh - 64px)' }}>
+      <Grid container spacing={3}>
+          <Grid item xs={12} sm={4} md={3}>
+          <Grid  style={{ height: 'calc(100vh - 64px)' }}>
        <Typography variant='h5' >Connected Friends</Typography>
        <Divider/>
-      <div style={{ overflowY: 'scroll', height: 'calc(100% - 16px)',margin:'10px' }}>
+      <div style={{ overflowY: 'scroll', height: 'calc(100% - 16px)'}}>
        
         {/* Display chat friends */}
         {chats && chats.length > 0 ? (
@@ -478,51 +550,52 @@ const fetchMessage = async () => {
         )}
       </div>
     </Grid>
+           <Divider orientation="vertical" flexItem />
+       </Grid>
+       {/* <Divider orientation="vertical" flexItem /> */}
+       <Grid item xs={12} sm={8} md={9}>
+     
+        <Grid container  display="flex" justifyContent="space-between">  
+  <Grid item xs={6}>
+    <Button variant="outlined" onClick={handleClickOpen}>
+      New group Chat
+    </Button>
   </Grid>
-</TabPanel>
-      <TabPanel value='2'>
-      <Divider style={{marginTop:"10px",marginBottom:"10px"}}/>
-        <Grid container direction='row' display="flex" justifyContent="space-between">  
-           <Grid>
-            <Button variant="outlined" onClick={handleClickOpen}>
-           New group Chat
-          </Button>
-           </Grid>
-           <Grid>
-           <Tooltip title= {selectedChat && (
-            selectedChat.isGroupChat
-            ? selectedChat.chatName
-            : selectedChat.user &&
-            selectedChat.user[1]._id===userid?selectedChat.user[0].name:selectedChat.user[1].name 
-        )
-         
-        }>
-                         <Avatar style={{ width: '30px', height: '30px', marginRight: '5px' }} />
-                      </Tooltip>
+  <Grid container alignItems="center" justifyContent="flex-end" item xs={6}>
+    <Tooltip title= {selectedChat && (
+        selectedChat.isGroupChat
+        ? selectedChat.chatName
+        : selectedChat.user &&
+        selectedChat.user[1]._id===userid?selectedChat.user[0].name:selectedChat.user[1].name 
+    )}>
+      <Avatar style={{ width: '30px', height: '30px', marginRight: '5px' }} />
+    </Tooltip>
     <Typography variant='h5'>
-        {selectedChat && (
-            selectedChat.isGroupChat
-            ? selectedChat.chatName
-            : selectedChat.user &&
-            selectedChat.user[1]._id===userid?selectedChat.user[0].name:selectedChat.user[1].name 
-        )
-         
-        }
+      {selectedChat && (
+        selectedChat.isGroupChat
+        ? selectedChat.chatName
+        : selectedChat.user &&
+        selectedChat.user[1]._id===userid?selectedChat.user[0].name:selectedChat.user[1].name 
+      ) 
+      }
     </Typography>
+  </Grid> 
 </Grid>
-         
-        </Grid>
-        <Divider style={{marginTop:"10px",marginBottom:"10px"}}/>
+        {/* <Divider style={{marginTop:"10px",marginBottom:"10px"}}/> */}
          <Grid>
-         
+{/*          
           <Typography>Click User to start Chat</Typography>
-          <Divider style={{marginTop:"10px",marginBottom:"10px"}}/>
+          <Divider style={{marginTop:"10px",marginBottom:"10px"}}/> */}
           <Divider style={{marginBottom:"10px"}}/>
-          {/* <Grid container style={{ maxHeight: "250px", overflow: "auto" ,marginBottom:"15px" }}> */}
-            
-      <Grid container 
-      style={{ maxHeight: "250px", overflow: "auto", marginBottom: "15px" }} 
-      ref={messageContainerRef}>
+          <Grid container 
+          style={{
+            maxHeight:"360px",
+            overflow: "scroll",
+            marginBottom: "15px",
+          }}
+  ref={messageContainerRef}
+  // className={`${classes.sm} ${classes.md} ${classes.lg}`}
+>
             {
             message&&message.map((msg)=>{
               return (
@@ -570,19 +643,11 @@ const fetchMessage = async () => {
           </Grid>
                 
           <Grid style={{position: "absolute", 
-          bottom: 0, left:0,
-          width: "100%"}}>
+          bottom: 0, right:0,
+          width: "75%"}}>
          
             
     <FormControl onKeyDown={sendMessage} fullWidth={true}>
-      {/* {isTyping?
-      <div>
-        <Lottie
-         options={defaultOptions}
-         width={60}
-         style={{marginBottom:10,marginLeft:5}}
-        />
-      </div>:<></>} */}
       <TextField
         id="inputField"
         variant="outlined"
@@ -604,7 +669,8 @@ const fetchMessage = async () => {
     </FormControl>
   </Grid>
          </Grid>
-
+         </Grid>
+      </Grid>
         <DialogBox open={openDialog} onClose={handleClose} />
         </TabPanel>
       <TabPanel value='3'>Profile</TabPanel>
