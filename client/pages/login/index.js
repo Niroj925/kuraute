@@ -35,7 +35,7 @@ export default function SignUpForm() {
       "email":email,
       "password":password
     }
-    const res=await api.post('/login',data);
+    const res=await api.post('/api/user/login',data);
 
     console.log(res);
     if(res){     

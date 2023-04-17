@@ -40,7 +40,7 @@ export default function SignUpForm() {
       "email":email,
       "password":password
     }
-    const res=await api.post('/register',data);
+    const res=await api.post('/api/user/register',data);
     console.log(res);
     if(res){
         toast.success('Successfully created Account', {

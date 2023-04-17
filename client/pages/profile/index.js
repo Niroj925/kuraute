@@ -4,6 +4,7 @@ import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import { useState, useEffect ,useRef} from 'react';
 import axios from 'axios';
+import api from '../api/config.js';
 import { TextField, InputAdornment,Tab, Grid,Box,Divider,Tooltip, Typography,Button, Dialog,Chip,FormControl,
   DialogTitle,
   Menu,
@@ -39,7 +40,7 @@ const defaultOptions = {
   },
 };
 
-const ENDPOINT='http://localhost:8080';
+const ENDPOINT='https://kurautebackend.onrender.com';
 var socket,selectedChatCompare;
 
 const useStyles = makeStyles({
@@ -132,7 +133,8 @@ const useStyles = makeStyles({
       backgroundColor:"Blue",
       color:"white",
       borderRadius:"20px",
-      padding:"6px"
+      padding:"6px",
+      marginRight:"15px"
     },
     receiveMsg:{
       backgroundColor:"green",
@@ -178,7 +180,7 @@ useEffect(()=>{
 const fetchChats = async () => {
   try {
     const response = await axios.get(
-      `http://localhost:8080/api/chat`,
+      `https://kurautebackend.onrender.com/api/chat`,
       {
         headers: {
           token: JSON.parse(localStorage.getItem("token")),
@@ -207,7 +209,7 @@ useEffect(() => {
   const fetchUsers = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/user?search=${searchQuery}`,
+        `https://kurautebackend.onrender.com/api/user?search=${searchQuery}`,
         {
           headers: {
             token: JSON.parse(localStorage.getItem("token")),
@@ -257,7 +259,7 @@ useEffect(() => {
       // console.log(JSON.parse(localStorage.getItem("token")));
     try {
       const response = await axios.post(
-        'http://localhost:8080/api/chat',
+        'https://kurautebackend.onrender.com/api/chat',
         {
           id:userId
         },
@@ -341,7 +343,7 @@ useEffect(() => {
     const sendMsg = async () => {
       try {
         const { data } = await axios.post(
-          'http://localhost:8080/api/message',
+          'https://kurautebackend.onrender.com/api/message',
           {
             msg: newMessage,
             chatId: selectedChat._id
@@ -367,7 +369,7 @@ useEffect(() => {
 const fetchMessage = async () => {
   try {
     const response = await axios.get(
-      `http://localhost:8080/api/message/${selectedChat._id}`,
+      `https://kurautebackend.onrender.com/api/message/${selectedChat._id}`,
       {
         headers: {
           token: JSON.parse(localStorage.getItem("token"))
