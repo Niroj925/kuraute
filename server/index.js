@@ -23,6 +23,16 @@ app.use('/api/user',router);
 app.use('/api/chat',chatRoute);
 app.use('/api/message',messageRoute);
 
+app.get('/posts', async (req, res) => {
+  try {
+    const response = await axios.get('https://jsonplaceholder.typicode.com/posts');
+    res.status(200).json(response.data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
 //deployment
 const __dirname=path.resolve();
 
