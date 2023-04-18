@@ -101,7 +101,6 @@ io.on('connection',(socket)=>{
       chat.user.forEach((usr)=>{
         if(usr._id == newMessageReceived.sender._id) return ;
         console.log(usr.name);
-        // socket.to(usr._id).emit('message received',newMessageReceived)
         socket.to(chat._id).emit('message received',newMessageReceived)
       })
     })
