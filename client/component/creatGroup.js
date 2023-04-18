@@ -61,7 +61,7 @@ function creatGroup(props) {
       const handleSearchUser = async () => {
         try {
           const response = await axios.get(
-            `http://localhost:8080/api/user?search=${searchUser}`,
+            `https://kurautebackend.onrender.com/api/user?search=${searchUser}`,
             {
               headers: {
                 token: JSON.parse(localStorage.getItem("token")),
@@ -92,7 +92,7 @@ function creatGroup(props) {
         const userIds = selectedUsers.map((user) => user._id);
         try {
           const response = await axios.post(
-            "http://localhost:8080/api/chat/group",
+            "https://kurautebackend.onrender.com/api/chat/group",
             {
               name: chatName,
               users: JSON.stringify(userIds),

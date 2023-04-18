@@ -4,7 +4,7 @@ import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import { useState, useEffect ,useRef} from 'react';
 import axios from 'axios';
-import api from '../api/config.js';
+import api from '../api/api.js';
 import { TextField, InputAdornment,Tab, Grid,Box,Divider,Tooltip, Typography,Button, Dialog,Chip,FormControl,
   DialogTitle,
   Menu,
@@ -178,6 +178,7 @@ useEffect(()=>{
 },[])
 
 const fetchChats = async () => {
+  console.log(process.env);
   try {
     const response = await axios.get(
       `https://kurautebackend.onrender.com/api/chat`,

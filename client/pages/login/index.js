@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styles from '../../styles/SignUpForm.module.css'
-import api from '../api/config.js';
+import api from '../api/api.js';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Link from 'next/link';

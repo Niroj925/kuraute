@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styles from '../../styles/SignUpForm.module.css'
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import api from '../api/config.js';
+import api from '../api/api.js';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {Grid} from "@mui/material";
