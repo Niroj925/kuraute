@@ -76,7 +76,8 @@ io.on('connection',(socket)=>{
        socket.emit("connected")
 
         // send the updated list of logged-in users to all connected sockets
-    socket.emit('user list', Object.values(users));
+    socket.emit('user list', users);
+    
     })
 
     socket.on('join chat',(room)=>{
