@@ -57,9 +57,8 @@ const server=http.createServer(app);
 const io=new Server(server,{
   pingTimeout:50000,
     cors:{
-    // origin:"http://localhost:3000",
-    origin:"https://kuraute.netlify.app",
-    // origin: ["https://kuraute.netlify.app, http://localhost:3000"],
+    origin:"http://localhost:3000",
+    // origin:"https://kuraute.netlify.app",
     methods:["GET","POST","PUT","DELETE"]
     }
 })
