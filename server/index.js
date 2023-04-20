@@ -70,8 +70,12 @@ io.on('connection',(socket)=>{
 
     //listen event
      socket.on('setup',(userData)=>{
-       console.log(userData);
+      
+       if (!users.some((user) => user.id === userData.id)) {
        users.push(userData);
+       } 
+       
+       console.log(userData);
        socket.join(userData);
        socket.emit("connected")
       console.log('logged users:'+users)
