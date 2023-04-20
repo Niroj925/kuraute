@@ -74,10 +74,10 @@ io.on('connection',(socket)=>{
        users[socket.id] = userData;
        socket.join(userData);
        socket.emit("connected")
-
+      console.log('logged users:'+users)
         // send the updated list of logged-in users to all connected sockets
     socket.emit('user list', users);
-    
+
     })
 
     socket.on('join chat',(room)=>{
