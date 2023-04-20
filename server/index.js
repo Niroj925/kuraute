@@ -71,7 +71,7 @@ io.on('connection',(socket)=>{
     //listen event
      socket.on('setup',(userData)=>{
        console.log(userData);
-       users[socket.id] = userData;
+       users.push(userData);
        socket.join(userData);
        socket.emit("connected")
       console.log('logged users:'+users)
