@@ -54,7 +54,7 @@ app.use(errHandler);
 
 const server=http.createServer(app);
 
-const users = {}; 
+const users = []; 
 
 const io=new Server(server,{
   pingTimeout:50000,
@@ -74,9 +74,9 @@ io.on('connection',(socket)=>{
        users[socket.id] = userData;
        socket.join(userData);
        socket.emit("connected")
-      console.log('logged users:'+Object.values(users))
+      console.log('logged users:'+users)
         // send the updated list of logged-in users to all connected sockets
-    socket.emit('user list', Object.values(users));
+    socket.emit('user list',users);
 
     })
 
@@ -117,9 +117,11 @@ io.on('connection',(socket)=>{
       console.log('user disconnected');
       socket.leave(userData._id);
 
-      delete users[socket.id];
-    // send the updated list of logged-in users to all connected sockets
-    io.emit('user list', Object.values(users));
+        // remove the user from the array
+    const index = users.findIndex((user) => user.id === socket.id);
+    if (index !== -1) {
+      users.splice(index, 1);
+    }
     });
  
 })
