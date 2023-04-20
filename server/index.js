@@ -78,7 +78,7 @@ io.on('connection',(socket)=>{
       console.log('logged users:'+loginUsers)
         // send the updated list of logged-in users to all connected sockets
     // socket.emit('user list',loginUsers);
-    socket.to(userData).emit('user list',loginUsers)
+    socket.emit('user list',loginUsers)
 
     })
 
