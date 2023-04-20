@@ -55,7 +55,7 @@ app.use(errHandler);
 const server=http.createServer(app);
 
 const users = []; 
-const loginUsers=[];
+// const loginUsers=[];
 const io=new Server(server,{
   pingTimeout:50000,
     cors:{
@@ -72,7 +72,7 @@ io.on('connection',(socket)=>{
      socket.on('setup',(userData)=>{
        console.log(userData);
        users.push(userData);
-       loginUsers = [...new Set(users)];
+      let loginUsers = [...new Set(users)];
        socket.join(userData);
        socket.emit("connected")
       console.log('logged users:'+loginUsers)
