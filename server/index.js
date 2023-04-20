@@ -71,16 +71,33 @@ io.on('connection',(socket)=>{
     //listen event
      socket.on('setup',(userData)=>{
       
-       if (!users.some((user) => user.id === userData.id)) {
-       users.push(userData);
-       } 
-       
-       console.log(userData);
-       socket.join(userData);
-       socket.emit("connected")
-      console.log('logged users:'+users)
-        // send the updated list of logged-in users to all connected sockets
-    socket.emit('user list',users);
+    //    if (!users.some((user) => user.id === userData.id)) {
+    //    users.push(userData);
+    //    } 
+
+    //    console.log(userData);
+    //    socket.join(userData);
+    //    socket.emit("connected")
+    //   console.log('logged users:'+users)
+    //     // send the updated list of logged-in users to all connected sockets
+    // socket.emit('user list',users);
+
+    if (!users.some((user) => user.id === userData.id)) {
+      // add the user data to the array
+      users.push(userData);
+
+      // join the socket room with the user data
+      socket.join(userData.id);
+
+      // emit connected event to the client
+      socket.emit("connected");
+
+      // send the updated list of logged-in users to all connected sockets
+      io.emit("user list", users);
+      console.log("logged users:" + users);
+    } else {
+      console.log(`User with id ${userData.id} already exists`);
+    }
 
     })
 
