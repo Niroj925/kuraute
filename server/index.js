@@ -54,6 +54,8 @@ app.use(errHandler);
 
 const server=http.createServer(app);
 
+const users = {}; 
+
 const io=new Server(server,{
   pingTimeout:50000,
     cors:{
@@ -69,8 +71,12 @@ io.on('connection',(socket)=>{
     //listen event
      socket.on('setup',(userData)=>{
        console.log(userData);
+       users[socket.id] = userData;
        socket.join(userData);
        socket.emit("connected")
+
+        // send the updated list of logged-in users to all connected sockets
+    io.emit('user list', Object.values(users));
     })
 
     socket.on('join chat',(room)=>{
@@ -109,6 +115,10 @@ io.on('connection',(socket)=>{
     socket.on('disconnect', (userData) => {
       console.log('user disconnected');
       socket.leave(userData._id);
+      
+      delete users[socket.id];
+    // send the updated list of logged-in users to all connected sockets
+    io.emit('user list', Object.values(users));
     });
  
 })
