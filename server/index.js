@@ -76,7 +76,7 @@ io.on('connection',(socket)=>{
        socket.emit("connected")
 
         // send the updated list of logged-in users to all connected sockets
-    io.emit('user list', Object.values(users));
+    socket.emit('user list', Object.values(users));
     })
 
     socket.on('join chat',(room)=>{
@@ -115,7 +115,7 @@ io.on('connection',(socket)=>{
     socket.on('disconnect', (userData) => {
       console.log('user disconnected');
       socket.leave(userData._id);
-      
+
       delete users[socket.id];
     // send the updated list of logged-in users to all connected sockets
     io.emit('user list', Object.values(users));
