@@ -72,7 +72,9 @@ io.on('connection',(socket)=>{
     //listen event
      socket.on('setup',(userData)=>{
        console.log(userData);
-       users.push(userData);
+       if(userData!==null){
+        users.push(userData);
+       }    
       loginUsers = [...new Set(users)];
        socket.join(userData);
        socket.emit("connected")
