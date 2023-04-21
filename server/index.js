@@ -120,11 +120,13 @@ io.on('connection',(socket)=>{
 
     socket.on('disconnect', (userData) => {
       console.log('user disconnected');
-      console.log(userData)
+      // console.log(userData)
       socket.leave(userData);
       
         // remove the user from the array
     const index = loginUsers.indexOf(userData);
+    console.log(index)
+    console.log(userData)
     if (index !== -1) {
       loginUsers.splice(index, 1);
     }
