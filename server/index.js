@@ -125,6 +125,7 @@ io.on('connection',(socket)=>{
       loginUsers.splice(index, 1);
     }
     console.log('loged usr:'+loginUsers)
+    socket.emit('user list',loginUsers)
     })
 
 
