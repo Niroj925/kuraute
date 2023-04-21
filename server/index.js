@@ -124,7 +124,7 @@ io.on('connection',(socket)=>{
       socket.leave(userData);
       
         // remove the user from the array
-    const index = loginUsers.findIndex(userData);
+    const index = loginUsers.indexOf(userData);
     if (index !== -1) {
       loginUsers.splice(index, 1);
     }
