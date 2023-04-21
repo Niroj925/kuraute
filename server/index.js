@@ -120,7 +120,7 @@ io.on('connection',(socket)=>{
     socket.on('remove',(usrid)=>{
       const index = loginUsers.indexOf(usrid);
     console.log(index)
-    console.log(usrid)
+    console.log('userif'+usrid)
     if (index !== -1) {
       loginUsers.splice(index, 1);
     }
@@ -133,12 +133,12 @@ io.on('connection',(socket)=>{
       socket.leave(userData);
       
         // remove the user from the array
-    const index = loginUsers.indexOf(userData);
-    console.log(index)
-    console.log(userData)
-    if (index !== -1) {
-      loginUsers.splice(index, 1);
-    }
+    // const index = loginUsers.indexOf(userData);
+    // console.log(index)
+    // console.log(userData)
+    // if (index !== -1) {
+    //   loginUsers.splice(index, 1);
+    // }
     
     });
  
