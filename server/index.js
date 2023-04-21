@@ -117,6 +117,15 @@ io.on('connection',(socket)=>{
       })
     })
 
+    socket.on('remove',(usrid)=>{
+      const index = loginUsers.indexOf(usrid);
+    console.log(index)
+    console.log(usrid)
+    if (index !== -1) {
+      loginUsers.splice(index, 1);
+    }
+    })
+
 
     socket.on('disconnect', (userData) => {
       console.log('user disconnected');
@@ -130,6 +139,7 @@ io.on('connection',(socket)=>{
     if (index !== -1) {
       loginUsers.splice(index, 1);
     }
+    
     });
  
 })
