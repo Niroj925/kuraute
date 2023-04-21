@@ -56,6 +56,7 @@ const server=http.createServer(app);
 
 const users = []; 
 // const loginUsers=[];
+let loginUsers=[];
 const io=new Server(server,{
   pingTimeout:50000,
     cors:{
@@ -72,7 +73,7 @@ io.on('connection',(socket)=>{
      socket.on('setup',(userData)=>{
        console.log(userData);
        users.push(userData);
-      let loginUsers = [...new Set(users)];
+      loginUsers = [...new Set(users)];
        socket.join(userData);
        socket.emit("connected")
       console.log('logged users:'+loginUsers)
@@ -117,12 +118,13 @@ io.on('connection',(socket)=>{
 
     socket.on('disconnect', (userData) => {
       console.log('user disconnected');
+      console.log(userData)
       socket.leave(userData._id);
 
         // remove the user from the array
-    const index = users.findIndex((user) => user.id === socket.id);
+    const index = loginUsers.findIndex((user) => user.id === socket.id);
     if (index !== -1) {
-      users.splice(index, 1);
+      loginUsers.splice(index, 1);
     }
     });
  
