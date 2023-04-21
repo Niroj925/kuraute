@@ -120,10 +120,11 @@ io.on('connection',(socket)=>{
     socket.on('remove',(usrid)=>{
       const index = loginUsers.indexOf(usrid);
     console.log(index)
-    console.log('userif'+usrid)
+    console.log('userid:'+usrid)
     if (index !== -1) {
       loginUsers.splice(index, 1);
     }
+    console.log('loged usr:'+loginUsers)
     })
 
 
