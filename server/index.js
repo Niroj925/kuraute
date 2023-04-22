@@ -72,16 +72,25 @@ io.on('connection',(socket)=>{
     //listen event
      socket.on('setup',(userData)=>{
        console.log(userData);
-       if(userData!==null){
-        users.push(userData);
-       }    
-      loginUsers = [...new Set(users)];
-       socket.join(userData);
-       socket.emit("connected")
-      console.log('logged users:'+loginUsers)
-        // send the updated list of logged-in users to all connected sockets
-    // socket.emit('user list',loginUsers);
-    socket.emit('user list',loginUsers)
+    //    if(userData!==null){
+    //     users.push(userData);
+    //    }    
+    //   loginUsers = [...new Set(users)];
+    //    socket.join(userData);
+    //    socket.emit("connected")
+    //   console.log('logged users:'+loginUsers)
+    //     // send the updated list of logged-in users to all connected sockets
+    // // socket.emit('user list',loginUsers);
+    // socket.emit('user list',loginUsers)
+    console.log(userData);
+    socket.userData = userData;
+    socket.join(userData.room);
+    console.log(`user ${userData.id} joined room ${userData.room}`);
+
+    // get the list of users in the current room
+    const roomUsers = getRoomUsers(userData.room);
+    // emit the list of users to all connected sockets in the room
+    io.to(userData.room).emit('user list', roomUsers);
 
     })
 
@@ -118,14 +127,35 @@ io.on('connection',(socket)=>{
     })
 
     socket.on('remove',(usrid)=>{
-      const index = loginUsers.indexOf(usrid);
-    console.log(index)
-    console.log('userid:'+usrid)
-    if (index !== -1) {
-      loginUsers.splice(index, 1);
-    }
-    console.log('loged usr:'+loginUsers)
-    socket.emit('user list',loginUsers)
+    //   const index = loginUsers.indexOf(usrid);
+    // console.log(index)
+    // console.log('userid:'+usrid)
+    // if (index !== -1) {
+    //   loginUsers.splice(index, 1);
+    // }
+    // console.log('loged usr:'+loginUsers)
+    // socket.emit('user list',loginUsers)
+
+    socket.on('logout', () => {
+      if (socket.userData) {
+        // remove the user from the room
+        socket.leave(socket.userData.room);
+        console.log(`user ${socket.userData.id} left room ${socket.userData.room}`);
+  
+        // remove the user from the list of room users
+        removeRoomUser(socket.userData.room, socket.userData.id);
+        console.log(`removed user ${socket.userData.id} from room ${socket.userData.room}`);
+  
+        // get the updated list of users in the current room
+        const roomUsers = getRoomUsers(socket.userData.room);
+  
+        // emit the updated list of users to all connected sockets in the room
+        io.to(socket.userData.room).emit('user list', roomUsers);
+  
+        // unset the user data from the socket
+        delete socket.userData;
+      }
+    });
     })
 
 
@@ -143,8 +173,30 @@ io.on('connection',(socket)=>{
     // }
     
     });
- 
+
 })
+
+function getRoomUsers(room) {
+  const roomSockets = io.sockets.adapter.rooms.get(room);
+  if (roomSockets) {
+    const socketsArray = Array.from(roomSockets);
+    return socketsArray.map(([socketId, socket]) => socket.userData);
+  } else {
+    return [];
+  }
+}
+
+function removeRoomUser(room, userId) {
+  const roomSockets = io.sockets.adapter.rooms.get(room);
+  if (roomSockets) {
+    const socketsArray = Array.from(roomSockets);
+    const socket = socketsArray.find(([socketId, socket]) => socket.userData.id === userId);
+    if (socket) {
+      socket[1].leave(room);
+      console.log(`removed socket ${socket[0]} from room ${room}`);
+    }
+  }
+}
 
  server.listen(PORT,()=>{
   console.log("server is running");
