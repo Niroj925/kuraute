@@ -1,120 +1,84 @@
 import React from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import { useRouter } from 'next/router';
 
-import {
-  Container,
-  Grid,
-  Typography,
-  Button,
-  Card,
-  CardContent,
-  CardMedia,
-} from '@mui/material';
-
-import {useRouter} from 'next/router'
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    padding:"5px",
-    margin:"10px"
-  },
-  hero: {
-    height: '100vh',
-    backgroundImage: 'url("../image/bg.png")',
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    color: 'white',
-    marginBottom:"10px",
-    color:"grey"
-  },
-  main: {
-    marginBottom: "10px",
-  },
-  card: {
-    display: 'flex',
-    margin: "10px",
-    '&:hover': {
-      boxShadow: "10px",
-    },
-  },
-  cardContent: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-  },
-  cardMedia: {
-    minWidth: '200px',
-    minHeight: '200px',
-    flexShrink: 0,
-  },
-}));
-
+import 'bootstrap/dist/css/bootstrap.min.css';
 const HomePage = () => {
-  const classes = useStyles();
-  const router=useRouter();
+  const router = useRouter();
+
   return (
-    <div className={classes.root}>
-      <div className={classes.hero}>
-        <Typography variant="h1" align="center" >
-          Welcome to Kuraute
-        </Typography>
+    <div style={{ padding: '5px', margin: '10px' }}>
+      <div
+        style={{
+          height: '100vh',
+          backgroundImage: 'url("../image/bg.png")',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'white',
+          marginBottom: '10px',
+          color: 'grey',
+        }}
+      >
+        <h1 style={{ textAlign: 'center' }}>Welcome to Kuraute</h1>
       </div>
 
-      <Container maxWidth="md" className={classes.main}>
-        <Grid container spacing={4} justify="center">
-          <Grid item xs={12} md={6}>
-            <Typography variant="h2" gutterBottom>
-              What is Kuraute?
-            </Typography>
-            <Typography variant="body1" paragraph>
-              Kuraute is a real-time chat web application that allows you to communicate with your friends, family, or colleagues. It's fast, easy to use, and completely free.
-            </Typography>
-            <Typography variant="body1" paragraph>
-              With Kuraute, you can create groups, invite people, and start chatting instantly. You can also send photos, videos, and documents to your contacts.
-            </Typography>
-            <Button variant="contained" color="primary" onClick={()=>router.push('/signup')}>
+      <div style={{ maxWidth: 'md', marginBottom: '10px' }}>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <div style={{ width: '50%' }}>
+            <h2 style={{ marginBottom: '10px' }}>What is Kuraute?</h2>
+            <p style={{ marginBottom: '10px' }}>
+              Kuraute is a real-time chat web application that allows you to communicate with your
+              friends, family, or colleagues. It's fast, easy to use, and completely free.
+            </p>
+            <p style={{ marginBottom: '10px' }}>
+              With Kuraute, you can create groups, invite people, and start chatting instantly. You
+              can also send photos, videos, and documents to your contacts.
+            </p>
+            <button
+              style={{
+                backgroundColor: 'blue',
+                color: 'white',
+                padding: '10px',
+                borderRadius: '5px',
+                cursor: 'pointer',
+                border: 'none',
+                marginBottom: '10px',
+              }}
+              onClick={() => router.push('/signup')}
+            >
               Sign Up Now
-            </Button>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Card className={classes.card}>
-              <CardMedia
-                className={classes.cardMedia}
-                image="../image/snr.png"
-                title="Chat on Kuraute"
+            </button>
+          </div>
+          <div style={{ width: '50%', display: 'flex', justifyContent: 'center' }}>
+            <div style={{ width: '70%', display: 'flex', flexDirection: 'column' }}>
+              <img
+                src="../image/snr.png"
+                alt="Chat on Kuraute"
+                style={{ minWidth: '200px', minHeight: '200px', flexShrink: 0 }}
               />
-              <CardContent className={classes.cardContent}>
-                <Typography variant="h5">
-                  Chat on Kuraute
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  Join the conversation with your friends and family
-                </Typography>
-                <Button variant="outlined" color="primary"  onClick={()=>router.push('/login')}>
-                  Sign In
-                </Button>
-              </CardContent>
-            </Card>
-            {/* <Card className={classes.card}>
-              <CardMedia
-                className={classes.cardMedia}
-                image="https://picsum.photos/id/1061/200/200"
-                title="Create a Group"
-              />
-              <CardContent className={classes.cardContent}>
-                <Typography variant="h5">
-                  Create a Group
-                </Typography>
+              <h5 style={{ marginBottom: '10px' }}>Chat on Kuraute</h5>
+              <p style={{ marginBottom: '10px' }}>Join the conversation with your friends and family</p>
+              <button
+                style={{
+                  backgroundColor: 'white',
+                  color: 'blue',
+                  padding: '10px',
+                  borderRadius: '5px',
+                  cursor: 'pointer',
+                  border: '2px solid blue',
+                }}
+                onClick={() => router.push('/login')}
+              >
+                Sign In
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
-                </CardContent>
-                </Card> */}
-                </Grid>
-               </Grid>
-               </Container>
-               </div>
-                )
-                }
 export default HomePage;

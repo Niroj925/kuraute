@@ -5,6 +5,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Link from 'next/link';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 import { useRouter } from 'next/router';
 import Navbar from '../../component/navbar.js'
 import Footer from '../../component/footer.js'

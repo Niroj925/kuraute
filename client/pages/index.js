@@ -1,17 +1,23 @@
+import Head from 'next/head'
 import React from 'react'
 import Navbar from '../component/navbar';
 import  HomePage from '../component/homepage';
 import Footer from '../component/footer';
 
-function index() {
-
+export default function Home() {
   return (
-    <div className='container'>
+    <>
+      <Head>
+        <title>Kuraute</title>
+        <meta name="description" content="kuraute realtime chat app " />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <div>
       <Navbar/>    
       <HomePage/> 
       <Footer/>
-    </div>
+      </div>
+    </>
   )
 }
-
-export default index

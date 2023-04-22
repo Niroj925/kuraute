@@ -1,154 +1,26 @@
-
-import TabContext from '@mui/lab/TabContext';
-import TabList from '@mui/lab/TabList';
-import TabPanel from '@mui/lab/TabPanel';
-import { useState, useEffect ,useRef} from 'react';
+import React, { useState,useEffect,useRef } from 'react';
+import { Nav, Tab,Form,ListGroup,InputGroup,FormControl,NavDropdown,Image,Avatar} from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
+import style from '../../styles/Profile.module.css';
+import { useRouter } from 'next/router';
+import animationData from '../../animation/data.json';
+import io from 'socket.io-client';
 import axios from 'axios';
-import api from '../api/api.js';
-import { TextField, InputAdornment,Tab, Grid,Box,Divider,Tooltip, Typography,Button, Dialog,Chip,FormControl,
-  DialogTitle,
-  Menu,
-  MenuItem,
-  DialogContent,
-  DialogActions,} from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
-import {CloseIcon} from '@mui/icons-material';
-import {useRouter} from 'next/router';
-import { Card, CardContent, Avatar} from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import DialogBox from '../../component/creatGroup';
-import SendIcon from '@mui/icons-material/Send';
-import ChatIcon from '@mui/icons-material/Chat';
-import PersonAddIcon from '@mui/icons-material/PersonAdd';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import LogoutIcon from '@mui/icons-material/Logout';
-import PersonIcon from '@mui/icons-material/Person';
-import ScrollableFeed from 'react-scrollable-feed';
-import io from 'socket.io-client';
-import Lottie from 'react-lottie'
-import animationData from '../../animation/data.json';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import {FaPaperPlane,FaRegPaperPlane,FaUserCircle} from 'react-icons/fa'
 
+import DialogueBox from '../../component/createGroup';
+import MyImage from '@/component/roundimage';
+  
+  const ENDPOINT='https://kurautebackend.onrender.com';
+  var socket,selectedChatCompare;
 
-const defaultOptions = {
-  loop: true,
-  autoplay: true,
-  animationData: animationData,
-  rendererSettings: {
-    preserveAspectRatio: "xMidYMid slice",
-  },
-};
-
-const ENDPOINT='https://kurautebackend.onrender.com';
-var socket,selectedChatCompare;
-
-const useStyles = makeStyles({
-  sm: {
-    '@media (max-width: 450px)': {
-      maxWidth: '320px',
-      maxHeight:'350px'
-    },
-  },
-  md: {
-    '@media (min-width: 451px) and (max-width: 750px)': {
-      maxWidth: '750px',
-      maxHeight:'350px'
-    },
-  },
-  lg: {
-    '@media (min-width: 750px) and (max-width: 1200px)': {
-      maxWidth: '900px',
-      maxHeight:'350px'
-    },
-  },
-  root: {
-    display: 'flex',
-    alignItems: 'center',
-    '& > *': {
-      marginRight:"10px",
-    },
-  },
-    card: {
-      display: "flex",
-      alignItems: "center",
-      marginBottom: 10,
-      transition: "transform 0.s",
-      "&:hover": {
-        transform: "scale(1.01)",
-        backgroundColor: "#eee",
-        "& p": {
-          fontSize: "1.2rem",
-          fontWeight: "bold",
-        },
-      },
-    },
-    dcard: {
-      display: "flex",
-      height:"45px",
-      alignItems: "center",
-      marginBottom:3,
-      transition: "transform 0.s",
-      "&:hover": {
-        transform: "scale(1.01)",
-        backgroundColor: "#eee",
-        "& p": {
-          fontSize: "1.2rem",
-          fontWeight: "bold",
-        },
-      },
-    },
-    avatar: {
-      marginRight: 10,
-      marginLeft:15
-    },
-    davatar: {
-      marginRight: 5,
-      marginLeft:5
-    },
-    tabList:{
-      display:"flex",
-      justifyContent:"space-between",
-      backgroundColor: "#eee",
-      "&:hover": {
-        transform: "scale(1.01)",
-          color:'black',
-          fontWeight:"bold"
-      }
-    },
-    
-    tab: {
-      flex: 1
-    },
-    button:{
-      marginLeft:"10px"
-    },
-    sendIcon:{
-      cursor:"pointer",
-      "&:hover":{
-        color:"blue"
-      }
-    },
-    sendMsg:{
-      backgroundColor:"Blue",
-      color:"white",
-      borderRadius:"20px",
-      padding:"6px",
-      marginRight:"15px"
-    },
-    receiveMsg:{
-      backgroundColor:"green",
-      color:"black",
-      borderRadius:"20px",
-      padding:"6px"
-    }
-
-  });
-
-export default function UnstyledTabsIntroduction() {
+function App() {
+  const [activeTab, setActiveTab] = useState('friends');
   const [searchQuery, setSearchQuery] = useState('');
   const [users, setUsers] = useState([]);
-  const [value,setValue] =useState('1');
   const [selectedChat, setSelectedChat]=useState();
   const [chats,setChats]=useState([]);
  const [openDialog, setOpenDialog] = useState(false);
@@ -158,16 +30,13 @@ const [socketConnected,setSocketConnected]=useState(false);
 const [typing,setTyping]=useState(false);
 const [isTyping,setIsTyping]=useState(false);
 const [anchorEl, setAnchorEl] = useState(null);
+const [loggedInUsers,setLoggedInUsers]=useState([]);
 
   const router=useRouter();
 const messageContainerRef = useRef(null);
 
-  const classes = useStyles();
   const { userid } = router.query
   console.log(userid);
-  const handleChange=(event,newValue) =>{
-    setValue(newValue);
-}
 
 useEffect(()=>{
   socket=io(ENDPOINT);
@@ -219,6 +88,7 @@ useEffect(() => {
       );
 
       setUsers(response.data);
+     
     } catch (error) {
       
       if (error.response && error.response.status === 403) {
@@ -237,6 +107,14 @@ useEffect(() => {
         router.push("/login");
       }
     }
+
+    socket.on('user list', (users) => {
+      // update the UI to display the list of logged-in users
+      console.log(users)
+      setLoggedInUsers(users);
+      console.log("logged in users");
+      console.log(loggedInUsers);
+    });
   };
 
   fetchUsers();
@@ -257,7 +135,6 @@ useEffect(() => {
     const userClick=async(userId)=>{
       console.log('userId:');
       console.log(userId)
-      // console.log(JSON.parse(localStorage.getItem("token")));
     try {
       const response = await axios.post(
         'https://kurautebackend.onrender.com/api/chat',
@@ -275,9 +152,8 @@ useEffect(() => {
       console.log(selectedChat);
       const {data}=response;
       if(!chats.find((c)=>c._id===response.data._id)) setChats([data, ...chats]);
-
       fetchMessage();
-      setValue("2")
+      setActiveTab("chat")
       
     } catch (error) {
       
@@ -289,7 +165,7 @@ useEffect(() => {
     setSelectedChat(chat);
     console.log(selectedChat);
     fetchMessage();
-    setValue("2")
+    setActiveTab("chat")
     }
 
     const handleClickOpen = () => {
@@ -330,13 +206,13 @@ useEffect(() => {
       setNewMessage('');
     }
 
-    const sendMessage=async(event)=>{
+    const sendMessage=(event)=>{
       
       if(event.key==='Enter'){
+        event.preventDefault();
         // socket.emit('stop typing',selectedChat._id);
        sendMsg();
        fetchMessage();
-       console.log(message)
       }
     
     }
@@ -377,9 +253,16 @@ const fetchMessage = async () => {
         }
       }
     );
+    console.log('selected chat');
+    console.log(selectedChat);
+
+    (response.data.length>0)?setMessage(response.data):setMessage([]);
+    console.log('response:');
+    console.log(response.data);
+    console.log('received msg:');
     
-    setMessage(response.data);
-    setNewMessage('');
+    // setNewMessage('');
+    console.log(message);
     socket.emit('join chat', selectedChat._id);
 
   } catch (err) {
@@ -388,6 +271,7 @@ const fetchMessage = async () => {
 };
 
     useEffect(()=>{
+      fetchMessage();
       fetchMessage();
       selectedChatCompare=selectedChat;
     },[selectedChat])
@@ -423,282 +307,233 @@ const fetchMessage = async () => {
   };
 
   const handleLogout = () => {
+    socket.emit('remove', userid);
     localStorage.removeItem("token");
-    router.push("/login");
+    router.push("/");
   };
 
   const profilePage=()=>{
     setAnchorEl(null)
-    setValue("3")
+    setActiveTab("profile")
   }
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
 
+  const handleTabSelect = (tab) => {
+    setActiveTab(tab);
+  };
+
+  const handleProfileClick = () => {
+    setActiveTab('profile'); // set the active tab to "profile"
+  };
+
+
+
   return (
-     <>
-     <Grid>
+    <div className={style.body}>
+      <Tab.Container activeKey={activeTab} onSelect={handleTabSelect}>
+        <Nav variant="tabs" className={style.tabs} >
+          <Nav.Item>
+            <Nav.Link eventKey="friends" className={style.tab}>
+              Friends
+            </Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link eventKey="chat" className={style.tab}>
+              Chat
+            </Nav.Link>
+          </Nav.Item>
+          <Nav.Item>
+            <Nav.Link eventKey="profile" className={style.tab} onClick={handleProfileClick}>
+              Profile
+            </Nav.Link>
+          </Nav.Item>
+          <NavDropdown title={<FaUserCircle  size='30px'/>} id="basic-nav-dropdown">
+           <NavDropdown.Item eventKey="profile" onClick={() => setActiveTab("profile")}>
+    Profile
+      </NavDropdown.Item>
+  <NavDropdown.Divider />
+  <NavDropdown.Item onClick={handleLogout}>Logout</NavDropdown.Item>
+</NavDropdown>
+
+        </Nav>
+        <Tab.Content>
+            {/* firiends tab */}
+          <Tab.Pane eventKey="friends">
+            {activeTab === "friends" && (
+              <div className="mt-3">
+          <h4>Click users to start Chat</h4>
+          <hr style={{marginBottom:'5px',marginTop:"5px"}}/>
+
+          <Form.Group controlId="searchFriends">
+  <Form.Label>Search for friends</Form.Label>
+  <div className="position-relative">
+    <Form.Control
+      type="text"
+      placeholder="Enter search query"
+      value={searchQuery}
+      onChange={handleSearch}
+    />
+    <div className="position-absolute top-50 end-0 translate-middle-y pe-2">
+      {/* <SearchIcon /> */}
+    </div>
+  </div>
+</Form.Group>
+
+          <hr style={{marginBottom:'10px',marginTop:"5px"}}/>
+          <div style={{ 
+  overflowY: 'scroll', 
+  height: 'calc(100% - 56px)', 
+  margin: '10px', 
+}}>
+  <ListGroup style={{display:'flex',flexDirection:'column',margin:'10px'}} >
+    {users && users.map((user) => (
+      <ListGroup.Item key={user.id} 
+      className="d-flex align-items-center" 
+      action onClick={()=>userClick(user._id)}
+      style={{margin:'10px',fontSize:"20px",fontWeight:"bold"}}
+      >
       
-     </Grid>
-     <TabContext value={value}  >
-   
-  <TabList onChange={handleChange} className={classes.tabList} >
-  <Tab label="Friends" value="1" style={{ flex: 1 }} 
-    icon={<PersonAddIcon/>}
+        <div style={{display:'flex',alignItems:'center'}} >
 
-  />
-  <Tab label="Chat"
-   value="2" 
-   style={{ flex: 1 }} 
-    icon={<ChatIcon/>}
-   />
-  <Tab label="Profile" 
-  value="3" 
-  style={{ flex: 1 }}
-  aria-controls="simple-menu"
-  aria-haspopup="true"
-  onMouseOver={handleMenu}
-  onFocus={handleMenu}
-  icon={<AccountCircleIcon/>}
-  />
-   <Menu
-          id="simple-menu"
-          anchorEl={anchorEl}
-          keepMounted
-          open={Boolean(anchorEl)}
-          onClose={handleClosem}
-          alignItems='center'
-          display='flex'
-          justifyContent='center'
-          // className={classes.dropdown}
-        >
-          <MenuItem onClick={profilePage} style={{fontWeight:'bold'}}>
-            Profile
-          <PersonIcon/>
-          </MenuItem>
-          <MenuItem onClick={handleLogout} style={{fontWeight:'bold',}}>
-            Logout 
-            <LogoutIcon/>
-            </MenuItem>
-        </Menu>
-</TabList>
-
-<TabPanel value='1'>
-  <Grid container>
-    {/* User List */}
-    <Grid item xs={12} md={6} lg={6} style={{ height: 'calc(100vh - 64px)' }}>
-      <div>
-        <Typography variant='h4'>Click users to start Chat</Typography>
-        <Divider style={{marginBottom:'5px',marginTop:"5px"}}/>
-        <TextField
-          label="Search for friends"
-          value={searchQuery}
-          onChange={handleSearch}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
-        />
-        <Divider style={{marginBottom:'10px',marginTop:"5px"}}/>
-        <div style={{ overflowY: 'scroll', height: 'calc(100% - 56px)' ,margin:'10px'}}>
-          {users &&
-            users.map((user) => (
-              <Card key={user.id} className={classes.card} onClick={()=>userClick(user._id)}>
-                <Avatar className={classes.avatar}>
-                  {user.name
-                    .split(" ")
-                    .map((word) => word.charAt(0).toUpperCase())
-                    .join("")}
-                </Avatar>
-                <CardContent>
-                  <p>{user.name}</p>
-                  {/* <p>{user.user}</p> */}
-                </CardContent>
-              </Card>
-            ))}
-        </div>
-      </div>
-    </Grid>
-  </Grid>
-</TabPanel>
-      <TabPanel value='2'>
-
-      <Grid container spacing={3}>
-          <Grid item xs={12} sm={4} md={3}>
-          <Grid  style={{ height: 'calc(100vh - 64px)' }}>
-       <Typography variant='h5' >Connected Friends</Typography>
-       <Divider/>
-      <div style={{ overflowY: 'scroll', height: 'calc(100% - 16px)'}}>
+       <MyImage src="../image/dummy.png" alt="My Image" size={40} 
        
-        {/* Display chat friends */}
-        {chats && chats.length > 0 ? (
-          chats.map((chat) => (
-            <Card key={chat.id} className={classes.card} onClick={()=>chatClick(chat)}>
-              <Avatar className={classes.avatar}>
-                 {chat.isGroupChat===true?(
-                  chat.chatName
-                  .split(" ")
-                  .map((word) => word.charAt(0).toUpperCase())
-                  .join("")
-                 ):(
-                  chat.user[1]._id===userid?chat.user[0].name
-                  .split(" ")
-                  .map((word) => word.charAt(0).toUpperCase())
-                  .join(""):
-                 chat.user[1].name
-                    .split(" ")
-                    .map((word) => word.charAt(0).toUpperCase())
-                    .join("")
-                     )
-                    }
-              </Avatar>
-              <CardContent>
+       iscircle={loggedInUsers.includes(user._id)? true:false}
+        />
 
-                <p>{
+
+          <p className="mb-0" style={{marginLeft:'10px'}}>{user.name}</p>
+          {/* <p>{user.user}</p> */}
+        </div>
+      </ListGroup.Item>
+    ))}
+  </ListGroup>
+</div>
+              </div>
+            )}
+          </Tab.Pane>
+{/* chat tab */}
+          <Tab.Pane eventKey="chat">
+            {activeTab === "chat" && (
+               <div className={style.chat_container}>
+                 <div className={style.cfl} >
+                 <h4>Connected Friends</h4>
+                       <hr/>
+                 <div style={{ 
+  overflowY: 'scroll', 
+  height: 'calc(100% - 56px)', 
+  margin: '10px', 
+}}>
+  <ListGroup style={{display:'flex',flexDirection:'column',margin:'10px'}} >
+    {chats && chats.map((chat) => (
+      <ListGroup.Item key={chat.id} 
+      className="d-flex align-items-center" 
+      action 
+      onClick={()=>chatClick(chat)}
+      style={{margin:'5px',fontSize:"20px",fontWeight:"bold"}}
+      >
+        <div>
+          <p>{
                 chat.isGroupChat===true?chat.chatName:
                 chat.user[1]._id===userid?chat.user[0].name: chat.user[1].name            
                 }
                 </p>
-                {/* <p>{user.user}</p> */}
-              </CardContent>
-            </Card>
-          ))
-        ) : (
-          <div>No chats found</div>
-        )}
-      </div>
-    </Grid>
-           <Divider orientation="vertical" flexItem />
-       </Grid>
-       {/* <Divider orientation="vertical" flexItem /> */}
-       <Grid item xs={12} sm={8} md={9}>
-     
-        <Grid container  display="flex" justifyContent="space-between">  
-  <Grid item xs={6}>
-    <Button variant="outlined" onClick={handleClickOpen}>
-      New group Chat
-    </Button>
-  </Grid>
-  <Grid container alignItems="center" justifyContent="flex-end" item xs={6}>
-    <Tooltip title= {selectedChat && (
-        selectedChat.isGroupChat
-        ? selectedChat.chatName
-        : selectedChat.user &&
-        selectedChat.user[1]._id===userid?selectedChat.user[0].name:selectedChat.user[1].name 
-    )}>
-      <Avatar style={{ width: '30px', height: '30px', marginRight: '5px' }} />
-    </Tooltip>
-    <Typography variant='h5'>
-      {selectedChat && (
+        </div>
+      </ListGroup.Item>
+    ))}
+  </ListGroup>
+</div>
+                 </div>
+
+                   <div className={style.messagebox} >
+                   <div className={style.chatbar}>
+                    <Button variant="primary"  onClick={handleClickOpen}>New group chat</Button>
+                    {openDialog && <DialogueBox handleClose={() => setOpenDialog(false)} />}
+                        <h4>
+                    {selectedChat && (
         selectedChat.isGroupChat
         ? selectedChat.chatName
         : selectedChat.user &&
         selectedChat.user[1]._id===userid?selectedChat.user[0].name:selectedChat.user[1].name 
       ) 
       }
-    </Typography>
-  </Grid> 
-</Grid>
-        {/* <Divider style={{marginTop:"10px",marginBottom:"10px"}}/> */}
-         <Grid>
-{/*          
-          <Typography>Click User to start Chat</Typography>
-          <Divider style={{marginTop:"10px",marginBottom:"10px"}}/> */}
-          <Divider style={{marginBottom:"10px"}}/>
-          <Grid container 
-          style={{
-            maxHeight:"360px",
-            overflow: "scroll",
-            marginBottom: "15px",
-          }}
+                    </h4>
+                   </div>
+                   <hr/>
+                    <div 
+  className={style.containermsg}
   ref={messageContainerRef}
-  // className={`${classes.sm} ${classes.md} ${classes.lg}`}
 >
-            {
-            message&&message.map((msg)=>{
-              return (
-                <>
-                <Grid container
-                 direction='row' 
-                 alignItems='center' 
-                 justifyContent={msg.sender._id===userid ? 'flex-end' : 'flex-start'} 
-                 style={{marginTop:"5px"}}>
-                  {
-                    msg.sender._id===userid?(
-                      <>
-                      <Typography className={classes.sendMsg}>
-                      {msg.content}
-                      </Typography>
-                      </>
-                    ):(
-                      <>
-                      <Tooltip title={msg.sender.name}>
-                         <Avatar style={{ width: '30px', height: '30px', marginRight: '5px' }} />
-                      </Tooltip>
-                      <Typography className={classes.receiveMsg}>
-                      {msg.content}
-                      </Typography>
-                      </>
-                      
-                    )
-                  }
-                </Grid>
-                 
-                </>
-               
-              )
-            })
-          }
+  {message && message.map((msg) => {
+    return (
+      <div 
+        className={`d-flex ${msg.sender._id===userid ? 'justify-content-end' : 'justify-content-start'} align-items-center`}
+        style={{marginTop:"5px"}}
+      >
+        {msg.sender._id===userid ? (
+          <p className={style.sendermsg}>{msg.content}</p>
+        ) : (
+          <>
+            {/* <Tooltip title={msg.sender.name}>
+              <img src="https://via.placeholder.com/30" alt="avatar" className="rounded-circle mr-2" />
+            </Tooltip> */}
+            <p className={style.receivermsg}>{msg.content}</p>
+          </>
+        )}
+      </div>
+    )
+  })}
+  {isTyping ? (
+    <div>
+      Typing...
+    </div>
+  ) : <></>}
+</div>
 
-{isTyping?
-      <div>
-        <Lottie
-         options={defaultOptions}
-         width={60}
-         style={{marginBottom:10,marginLeft:5}}
+<div className={style.sendbtn}>
+ <Form onSubmit={sendMsg}>
+ <Form.Group controlId="sendMessage">
+      <div className="position-relative">
+        <Form.Control
+          type="text"
+          placeholder="Enter a message...."
+          value={newMessage}
+          onChange={handleInputChange}
+          onKeyDown={sendMessage}
+          style={{ paddingRight: '50px' }} // add padding for the icon
         />
-      </div>:<></>}
-          </Grid>
-                
-          <Grid style={{position: "absolute", 
-          bottom: 0, right:0,
-          width: "75%"}}>
-         
-            
-    <FormControl onKeyDown={sendMessage} fullWidth={true}>
-      <TextField
-        id="inputField"
-        variant="outlined"
-        size="large"
-        placeholder="Enter a message...."
-        value={newMessage}
-        onChange={handleInputChange}
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              <SendIcon onClick={sendMsg} className={classes.sendIcon}/>
-            </InputAdornment>
-          ),
-        }}
-        style={{
-          margin:"15px",    
-        }}
-      />
-    </FormControl>
-  </Grid>
-         </Grid>
-         </Grid>
-      </Grid>
-        <DialogBox open={openDialog} onClose={handleClose} />
-        </TabPanel>
-      <TabPanel value='3'>Profile</TabPanel>
+        <Button variant="outline-primary" className="position-absolute" style={{ right: 0, bottom: 0 }}>
+          <FaPaperPlane onClick={sendMsg}  />
+        </Button>
+      </div>
+    </Form.Group>
+</Form>
+</div>     
 
-    </TabContext>
-    <ToastContainer/>
-    </>
+                   </div>
+                   <div>
+                   <hr/>
+                 </div>
+               </div>
+            )}
+          </Tab.Pane>
+
+
+
+          <Tab.Pane eventKey="profile">
+            {activeTab === "profile" && (
+              <div className="mt-3">
+                <p>User profile goes here.</p>
+              </div>
+            )}
+          </Tab.Pane>
+
+        </Tab.Content>
+      </Tab.Container>
+      <ToastContainer/>
+    </div>
   );
 }
 
+export default App;

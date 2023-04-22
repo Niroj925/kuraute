@@ -1,44 +1,21 @@
 import React from 'react';
-import makeStyles from '@mui/styles/makeStyles';
-import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
+import style from '../styles/Footer.module.css';
 
-
-const useStyles = makeStyles((theme) => ({
-  footer: {
-    padding: 10,
-    marginTop: 'auto',
-    backgroundColor:'grey[200]',
-  },
-  footerBox:{
-    width:'100%',
-    // backgroundColor:'#F5F5ED',
-    marginTop: 10,
-  }
-}));
-
-export default function Footer() {
-  const classes = useStyles();
+const Footer = () => {
 
   return (
-    <Container className={classes.footerBox}>
-       <footer className={classes.footer}>
-      <Container maxWidth="sm">
-         <Copyright />
-         
-      </Container>
-    </footer>
-    </Container>
-   
+    <div className={style.footerBox}>
+      <footer className={style.footer}>
+        <div >
+          <p className={style.center}>
+            {'© '}
+            {new Date().getFullYear()}
+            {' All rights reserved by NeoTech.'}
+          </p>
+        </div>
+      </footer>
+    </div>
   );
-}
+};
 
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
-      {new Date().getFullYear()}
-      {',All the rights are reserved by NeoTech.'}
-    </Typography>
-  );
-}
+export default Footer;

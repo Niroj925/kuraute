@@ -4,11 +4,11 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import api from '../api/api.js';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {Grid} from "@mui/material";
 import {useRouter, userRouter} from 'next/router';
 import Navbar from '../../component/navbar.js';
 import Footer from '../../component/footer.js'
 import Link from 'next/link';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 export default function SignUpForm() {
   const [email, setEmail] = useState('');
@@ -81,7 +81,7 @@ export default function SignUpForm() {
   };
 
   return (
-    <Grid>
+    <>
       <Navbar/>
     <form className={styles.form} onSubmit={handleSubmit}>
       <h2 className={styles.formTitle}>Sign Up</h2>
@@ -141,6 +141,6 @@ export default function SignUpForm() {
     </form>
     <ToastContainer/>
     <Footer/>
-    </Grid>
+    </>
   );
 }

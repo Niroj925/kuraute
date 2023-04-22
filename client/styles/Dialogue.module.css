@@ -1,0 +1,12 @@
+.userbox{
+        max-height: 250px;
+        overflow: scroll;
+        margin-bottom: 15px;
+      }
+      .badge{
+       font-weight: bold;
+       
+      }
+.badgeicon:hover{
+    color: red;
+}
