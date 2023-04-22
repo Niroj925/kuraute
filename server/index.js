@@ -54,9 +54,6 @@ app.use(errHandler);
 
 const server=http.createServer(app);
 
-const users = []; 
-// const loginUsers=[];
-let loginUsers=[];
 const io=new Server(server,{
   pingTimeout:50000,
     cors:{
@@ -68,7 +65,9 @@ const io=new Server(server,{
 
 io.on('connection',(socket)=>{
     console.log(`user connected to socket.io`);
+    const users = []; 
 
+    let loginUsers=[];
     //listen event
      socket.on('setup',(userData)=>{
        console.log(userData);
@@ -78,12 +77,11 @@ io.on('connection',(socket)=>{
       loginUsers = [...new Set(users)];
        socket.join(userData);
        socket.emit("connected")
+       console.log('users:'+users)
       console.log('logged users:'+loginUsers)
         // send the updated list of logged-in users to all connected sockets
-    // socket.emit('user list',loginUsers);
+    //broadcast to the all connection
     io.emit('user list',loginUsers)
- 
-
     })
 
     socket.on('join chat',(room)=>{
@@ -126,6 +124,7 @@ io.on('connection',(socket)=>{
       loginUsers.splice(index, 1);
     }
     console.log('loged usr:'+loginUsers)
+
     io.emit('user list',loginUsers)
 
     });
@@ -147,28 +146,6 @@ io.on('connection',(socket)=>{
     });
 
 })
-
-function getRoomUsers(room) {
-  const roomSockets = io.sockets.adapter.rooms.get(room);
-  if (roomSockets) {
-    const socketsArray = Array.from(roomSockets);
-    return socketsArray.map(([socketId, socket]) => socket.userData);
-  } else {
-    return [];
-  }
-}
-
-function removeRoomUser(room, userId) {
-  const roomSockets = io.sockets.adapter.rooms.get(room);
-  if (roomSockets) {
-    const socketsArray = Array.from(roomSockets);
-    const socket = socketsArray.find(([socketId, socket]) => socket.userData.id === userId);
-    if (socket) {
-      socket[1].leave(room);
-      console.log(`removed socket ${socket[0]} from room ${room}`);
-    }
-  }
-}
 
  server.listen(PORT,()=>{
   console.log("server is running");
