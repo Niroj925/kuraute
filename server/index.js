@@ -71,7 +71,7 @@ io.on('connection',(socket)=>{
 
     //listen event
      socket.on('setup',(userData)=>{
-       console.log(userData);
+      //  console.log(userData);
     //    if(userData!==null){
     //     users.push(userData);
     //    }    
@@ -84,13 +84,14 @@ io.on('connection',(socket)=>{
     // socket.emit('user list',loginUsers)
     console.log(userData);
     socket.userData = userData;
-    socket.join(userData.room);
-    console.log(`user ${userData.id} joined room ${userData.room}`);
+    //joining room 
+    socket.join(userData);
+    console.log(`user ${userData} joined room ${userData}`);
 
     // get the list of users in the current room
-    const roomUsers = getRoomUsers(userData.room);
+    const roomUsers = getRoomUsers(userData);
     // emit the list of users to all connected sockets in the room
-    io.to(userData.room).emit('user list', roomUsers);
+    io.to(userData).emit('user list', roomUsers);
 
     })
 
@@ -135,28 +136,25 @@ io.on('connection',(socket)=>{
     // }
     // console.log('loged usr:'+loginUsers)
     // socket.emit('user list',loginUsers)
-
-    socket.on('logout', () => {
       if (socket.userData) {
         // remove the user from the room
-        socket.leave(socket.userData.room);
-        console.log(`user ${socket.userData.id} left room ${socket.userData.room}`);
+        socket.leave(socket.userData);
+        console.log(`user ${socket.userData} left room ${socket.userData}`);
   
         // remove the user from the list of room users
-        removeRoomUser(socket.userData.room, socket.userData.id);
-        console.log(`removed user ${socket.userData.id} from room ${socket.userData.room}`);
+        removeRoomUser(socket.userData, socket.userData);
+        console.log(`removed user ${socket.userData} from room ${socket.userData}`);
   
         // get the updated list of users in the current room
-        const roomUsers = getRoomUsers(socket.userData.room);
+        const roomUsers = getRoomUsers(socket.userData);
   
         // emit the updated list of users to all connected sockets in the room
-        io.to(socket.userData.room).emit('user list', roomUsers);
+        io.to(socket.userData).emit('user list', roomUsers);
   
         // unset the user data from the socket
         delete socket.userData;
       }
     });
-    })
 
 
     socket.on('disconnect', (userData) => {
