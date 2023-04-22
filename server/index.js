@@ -71,27 +71,18 @@ io.on('connection',(socket)=>{
 
     //listen event
      socket.on('setup',(userData)=>{
-      //  console.log(userData);
-    //    if(userData!==null){
-    //     users.push(userData);
-    //    }    
-    //   loginUsers = [...new Set(users)];
-    //    socket.join(userData);
-    //    socket.emit("connected")
-    //   console.log('logged users:'+loginUsers)
-    //     // send the updated list of logged-in users to all connected sockets
-    // // socket.emit('user list',loginUsers);
-    // socket.emit('user list',loginUsers)
-    console.log(userData);
-    socket.userData = userData;
-    //joining room 
-    socket.join(userData);
-    console.log(`user ${userData} joined room ${userData}`);
-
-    // get the list of users in the current room
-    const roomUsers = getRoomUsers(userData);
-    // emit the list of users to all connected sockets in the room
-    io.to(userData).emit('user list', roomUsers);
+       console.log(userData);
+       if(userData!==null){
+        users.push(userData);
+       }    
+      loginUsers = [...new Set(users)];
+       socket.join(userData);
+       socket.emit("connected")
+      console.log('logged users:'+loginUsers)
+        // send the updated list of logged-in users to all connected sockets
+    // socket.emit('user list',loginUsers);
+    io.emit('user list',loginUsers)
+ 
 
     })
 
@@ -128,32 +119,15 @@ io.on('connection',(socket)=>{
     })
 
     socket.on('remove',(usrid)=>{
-    //   const index = loginUsers.indexOf(usrid);
-    // console.log(index)
-    // console.log('userid:'+usrid)
-    // if (index !== -1) {
-    //   loginUsers.splice(index, 1);
-    // }
-    // console.log('loged usr:'+loginUsers)
-    // socket.emit('user list',loginUsers)
-      if (socket.userData) {
-        // remove the user from the room
-        socket.leave(socket.userData);
-        console.log(`user ${socket.userData} left room ${socket.userData}`);
-  
-        // remove the user from the list of room users
-        removeRoomUser(socket.userData, socket.userData);
-        console.log(`removed user ${socket.userData} from room ${socket.userData}`);
-  
-        // get the updated list of users in the current room
-        const roomUsers = getRoomUsers(socket.userData);
-  
-        // emit the updated list of users to all connected sockets in the room
-        io.to(socket.userData).emit('user list', roomUsers);
-  
-        // unset the user data from the socket
-        delete socket.userData;
-      }
+      const index = loginUsers.indexOf(usrid);
+    console.log(index)
+    console.log('userid:'+usrid)
+    if (index !== -1) {
+      loginUsers.splice(index, 1);
+    }
+    console.log('loged usr:'+loginUsers)
+    io.emit('user list',loginUsers)
+
     });
 
 
