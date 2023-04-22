@@ -63,11 +63,12 @@ const io=new Server(server,{
     }
 })
 
+let users = []; 
+ let loginUsers=[];
+
 io.on('connection',(socket)=>{
     console.log(`user connected to socket.io`);
 
-    let users = []; 
-    let loginUsers=[];
     //listen event
      socket.on('setup',(userData)=>{
        console.log(userData);
