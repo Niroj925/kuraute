@@ -118,7 +118,7 @@ io.on('connection',(socket)=>{
     })
 
     socket.on('remove',(usrid)=>{
-      
+
       users = users.filter(item => item !== usrid);
 
       const index = loginUsers.indexOf(usrid);
@@ -129,7 +129,7 @@ io.on('connection',(socket)=>{
     }
 
   console.log('users:'+users);
-  loginUsers = [...new Set(loginUsers.map(user => user.id))];
+  // loginUsers = [...new Set(loginUsers.map(user => user.id))];
     console.log('loged usr:'+loginUsers)
 
     io.emit('user list',loginUsers)
