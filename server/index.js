@@ -65,8 +65,8 @@ const io=new Server(server,{
 
 io.on('connection',(socket)=>{
     console.log(`user connected to socket.io`);
-    const users = []; 
-
+    
+    let users = []; 
     let loginUsers=[];
     //listen event
      socket.on('setup',(userData)=>{
