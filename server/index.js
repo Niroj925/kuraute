@@ -65,7 +65,7 @@ const io=new Server(server,{
 
 io.on('connection',(socket)=>{
     console.log(`user connected to socket.io`);
-    
+
     let users = []; 
     let loginUsers=[];
     //listen event
@@ -117,12 +117,15 @@ io.on('connection',(socket)=>{
     })
 
     socket.on('remove',(usrid)=>{
-      const index = loginUsers.indexOf(usrid);
-    console.log(index)
-    console.log('userid:'+usrid)
-    if (index !== -1) {
-      loginUsers.splice(index, 1);
-    }
+    //   const index = loginUsers.indexOf(usrid);
+    // console.log(index)
+    // console.log('userid:'+usrid)
+    // if (index !== -1) {
+    //   loginUsers.splice(index, 1);
+    // }
+
+  users = users.filter(user => user.id !== usrid);
+  loginUsers = [...new Set(users.map(user => user.id))];
     console.log('loged usr:'+loginUsers)
 
     io.emit('user list',loginUsers)
