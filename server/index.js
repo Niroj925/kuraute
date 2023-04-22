@@ -118,15 +118,18 @@ io.on('connection',(socket)=>{
     })
 
     socket.on('remove',(usrid)=>{
-    //   const index = loginUsers.indexOf(usrid);
-    // console.log(index)
-    // console.log('userid:'+usrid)
-    // if (index !== -1) {
-    //   loginUsers.splice(index, 1);
-    // }
+      
+      users = users.filter(item => item !== usrid);
 
-  users = users.filter(user => user.id !== usrid);
-  loginUsers = [...new Set(users.map(user => user.id))];
+      const index = loginUsers.indexOf(usrid);
+    console.log(index)
+    console.log('userid:'+usrid)
+    if (index !== -1) {
+      loginUsers.splice(index, 1);
+    }
+
+  console.log('users:'+users);
+  loginUsers = [...new Set(loginUsers.map(user => user.id))];
     console.log('loged usr:'+loginUsers)
 
     io.emit('user list',loginUsers)
