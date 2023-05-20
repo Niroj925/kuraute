@@ -14,7 +14,7 @@ import {FaPaperPlane,FaRegPaperPlane,FaUserCircle} from 'react-icons/fa'
 import DialogueBox from '../../component/createGroup';
 import MyImage from '@/component/roundimage';
   
-  const ENDPOINT='https://kurautebackend.onrender.com';
+  const ENDPOINT=process.env.BACKEND_API;
   var socket,selectedChatCompare;
 
 function App() {
@@ -50,7 +50,7 @@ const fetchChats = async () => {
   console.log(process.env);
   try {
     const response = await axios.get(
-      `https://kurautebackend.onrender.com/api/chat`,
+      `${process.env.BACKEND_API}/api/chat`,
       {
         headers: {
           token: JSON.parse(localStorage.getItem("token")),
@@ -78,7 +78,7 @@ useEffect(() => {
   const fetchUsers = async () => {
     try {
       const response = await axios.get(
-        `https://kurautebackend.onrender.com/api/user?search=${searchQuery}`,
+        `${process.env.BACKEND_API}/api/user?search=${searchQuery}`,
         {
           headers: {
             token: JSON.parse(localStorage.getItem("token")),
@@ -136,7 +136,7 @@ useEffect(() => {
       console.log(userId)
     try {
       const response = await axios.post(
-        'https://kurautebackend.onrender.com/api/chat',
+        `${process.env.BACKEND_API}/api/chat`,
         {
           id:userId
         },
@@ -219,7 +219,7 @@ useEffect(() => {
     const sendMsg = async () => {
       try {
         const { data } = await axios.post(
-          'https://kurautebackend.onrender.com/api/message',
+          `${process.env.BACKEND_API}/api/message`,
           {
             msg: newMessage,
             chatId: selectedChat._id
@@ -245,7 +245,7 @@ useEffect(() => {
 const fetchMessage = async () => {
   try {
     const response = await axios.get(
-      `https://kurautebackend.onrender.com/api/message/${selectedChat._id}`,
+      `${process.env.BACKEND_API}/api/message/${selectedChat._id}`,
       {
         headers: {
           token: JSON.parse(localStorage.getItem("token"))
