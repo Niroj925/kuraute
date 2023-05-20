@@ -62,8 +62,7 @@ const fetchChats = async () => {
     const {data}=response
 
     setChats(data);
-    // console.log(data);
-    console.log(chats);
+    // console.log(chats);
   } catch (error) {
     
    console.log(error)
